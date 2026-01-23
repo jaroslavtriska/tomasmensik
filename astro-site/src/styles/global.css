@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+/* Theme configuration */
+@theme {
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'Outfit', sans-serif;
+  
+  /* Color palette - warm, sophisticated tones */
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f5f0e8;
+  --color-sand-200: #e8dfd1;
+  --color-sand-300: #d4c5b0;
+  --color-sand-400: #bda88a;
+  --color-sand-500: #a68f6d;
+  --color-sand-600: #8a7456;
+  --color-sand-700: #6e5c45;
+  --color-sand-800: #574a38;
+  --color-sand-900: #463d2f;
+  --color-sand-950: #2a241c;
+  
+  /* Accent - deep forest green */
+  --color-accent-50: #f3f6f4;
+  --color-accent-100: #e1e9e4;
+  --color-accent-200: #c4d3cb;
+  --color-accent-300: #9db6a7;
+  --color-accent-400: #74937f;
+  --color-accent-500: #547662;
+  --color-accent-600: #425e4e;
+  --color-accent-700: #364c40;
+  --color-accent-800: #2d3e35;
+  --color-accent-900: #26342d;
+  --color-accent-950: #141d19;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-sand-50);
+  color: var(--color-sand-900);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Custom utilities */
+.container-narrow {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Smooth image hover effect */
+.img-hover {
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.img-hover:hover {
+  transform: scale(1.02);
+}
+
+/* Button base styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--color-accent-700);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-800);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-sand-900);
+  color: var(--color-sand-900);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-sand-900);
+  color: white;
+}
+
+/* Page transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-sand-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-sand-500);
+}

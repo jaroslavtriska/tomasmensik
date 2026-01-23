@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { client, queries } from '../lib/sanity';
+import type { SanityAbout } from '../lib/sanity';
+
+// Fetch about data from Sanity
+const about = await client.fetch<SanityAbout>(queries.about);
+
+// Build image URL helper
+const getImageUrl = (ref: string) => {
+  if (!ref) return null;
+  return `https://cdn.sanity.io/images/bo49wn0o/production/${ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+};
+
+// Default values if no content in Sanity
+const name = about?.name || 'Tomáš Menšík';
+const subtitle = about?.subtitle || 'Váš realitní partner v Jihlavě';
+const bio = about?.bio || 'Jsem realitní makléř s více než 5 lety zkušeností v oboru.';
+const interests = about?.interests || ['Cyklistika', 'Běh', 'Cestování', 'Rodina'];
+const stats = about?.stats || [
+  { number: '100+', label: 'Prodaných nemovitostí' },
+  { number: '5+', label: 'Let zkušeností' },
+  { number: '98%', label: 'Spokojených klientů' },
+];
+
+// Get photos
+const mainPhoto = about?.mainPhoto?.asset?._ref ? getImageUrl(about.mainPhoto.asset._ref) : 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=800&fit=crop';
+const photos = about?.photos?.map((p: any) => getImageUrl(p.asset._ref)).filter(Boolean) || [
+  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=600&h=400&fit=crop',
+];
+---
+
+<Layout title="O mně" description="Poznejte Tomáše Menšíka - vašeho realitního partnera v Jihlavě a okolí.">
+  <!-- Hero -->
+  <section class="py-20 bg-sand-100">
+    <div class="container-narrow">
+      <div class="max-w-3xl">
+        <p class="text-accent-700 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
+          O mně
+        </p>
+        <h1 class="font-heading text-5xl md:text-6xl text-sand-900 mb-6 animate-fade-in animate-delay-100">
+          {name}
+        </h1>
+        <p class="text-sand-600 text-xl animate-fade-in animate-delay-200">
+          {subtitle}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="py-24">
+    <div class="container-narrow">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <!-- Bio -->
+        <div>
+          <div class="prose prose-lg text-sand-700 whitespace-pre-line mb-12">
+            {bio}
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-6 p-8 bg-sand-100">
+            {stats.map((stat: any) => (
+              <div class="text-center">
+                <div class="font-heading text-3xl md:text-4xl text-accent-700 font-semibold mb-1">
+                  {stat.number}
+                </div>
+                <div class="text-sm text-sand-600">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- Interests -->
+          <div class="mt-12">
+            <h3 class="font-heading text-2xl text-sand-900 mb-4">Koníčky a zájmy</h3>
+            <div class="flex flex-wrap gap-3">
+              {interests.map((interest: string) => (
+                <span class="px-4 py-2 bg-accent-100 text-accent-800 text-sm font-medium">
+                  {interest}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Photos -->
+        <div class="space-y-6">
+          <!-- Main photo -->
+          <div class="aspect-[3/4] overflow-hidden">
+            <img 
+              src={mainPhoto} 
+              alt={name}
+              class="w-full h-full object-cover"
+            />
+          </div>
+          
+          <!-- Photo grid -->
+          {photos.length > 0 && (
+            <div class="grid grid-cols-3 gap-4">
+              {photos.slice(0, 3).map((photo: string, index: number) => (
+                <div class="aspect-square overflow-hidden">
+                  <img 
+                    src={photo} 
+                    alt={`Fotografie ${index + 2}`}
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 bg-sand-900 text-white">
+    <div class="container-narrow text-center">
+      <h2 class="font-heading text-4xl mb-6">Pojďme spolupracovat</h2>
+      <p class="text-sand-400 max-w-2xl mx-auto mb-8">
+        Máte zájem o mé služby nebo se chcete na něco zeptat? 
+        Neváhejte mě kontaktovat, rád vám pomohu.
+      </p>
+      <a href="/kontakt" class="btn btn-primary bg-accent-600 hover:bg-accent-500">
+        Kontaktovat mě
+      </a>
+    </div>
+  </section>
+</Layout>

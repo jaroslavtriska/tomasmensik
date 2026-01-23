@@ -1,0 +1,102 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import { client, queries, formatPrice } from '../../lib/sanity';
+import type { SanityProperty } from '../../lib/sanity';
+
+// Fetch properties from Sanity
+const sanityProperties = await client.fetch<SanityProperty[]>(queries.allProperties);
+
+// Transform for PropertyCard
+const properties = sanityProperties.map(p => ({
+  title: p.title,
+  slug: p.slug.current,
+  location: p.location,
+  price: formatPrice(p.price),
+  type: p.type === 'prodej' ? 'Prodej' : 'Pronájem',
+  image: p.mainImage ? `https://cdn.sanity.io/images/bo49wn0o/production/${p.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}` : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
+  area: p.area ? `${p.area} m²` : undefined,
+}));
+---
+
+<Layout title="Nemovitosti v nabídce" description="Aktuální nabídka nemovitostí k prodeji v Jihlavě a okolí.">
+  <!-- Hero -->
+  <section class="py-20 bg-sand-100">
+    <div class="container-narrow">
+      <div class="max-w-3xl">
+        <p class="text-accent-700 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
+          Nemovitosti
+        </p>
+        <h1 class="font-heading text-5xl md:text-6xl text-sand-900 mb-6 animate-fade-in animate-delay-100">
+          Aktuální nabídka
+        </h1>
+        <p class="text-sand-600 text-xl animate-fade-in animate-delay-200">
+          Prohlédněte si aktuální nemovitosti v mé nabídce. Každá nemovitost 
+          je pečlivě vybrána a připravena k prodeji.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Property Stats -->
+  <section class="py-8 bg-white border-b border-sand-200">
+    <div class="container-narrow">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sand-600">
+          Zobrazeno <span class="font-semibold text-sand-900">{properties.length}</span> nemovitostí
+        </p>
+        <div class="flex items-center gap-4">
+          <a href="/zrealizovano" class="text-accent-700 hover:text-accent-800 font-medium flex items-center gap-2">
+            <span>Zrealizované prodeje</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Properties Grid -->
+  <section class="py-16">
+    <div class="container-narrow">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {properties.map((property, index) => (
+          <div class="animate-fade-in" style={`animation-delay: ${index * 100}ms`}>
+            <PropertyCard {...property} />
+          </div>
+        ))}
+      </div>
+
+      {properties.length === 0 && (
+        <div class="text-center py-16">
+          <p class="text-sand-500 text-lg">
+            V tuto chvíli nemám žádné nemovitosti v nabídce.
+          </p>
+          <a href="/kontakt" class="btn btn-primary mt-6">
+            Kontaktujte mě
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 bg-sand-100">
+    <div class="container-narrow">
+      <div class="bg-white p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+          <h2 class="font-heading text-3xl text-sand-900 mb-2">
+            Nenašli jste, co hledáte?
+          </h2>
+          <p class="text-sand-600">
+            Kontaktujte mě s vašimi požadavky a pomohu vám najít ideální nemovitost.
+          </p>
+        </div>
+        <a href="/kontakt" class="btn btn-primary whitespace-nowrap">
+          Napište mi
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

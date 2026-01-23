@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PropertyCard from '../components/PropertyCard.astro';
+import { client, queries, formatPrice } from '../lib/sanity';
+import type { SanityProperty } from '../lib/sanity';
+
+// Fetch sold properties from Sanity
+const sanityProperties = await client.fetch<SanityProperty[]>(queries.soldProperties);
+
+// Transform for PropertyCard
+const soldProperties = sanityProperties.map(p => ({
+  title: p.title,
+  slug: p.slug.current,
+  location: p.location,
+  price: formatPrice(p.price),
+  type: p.type === 'prodej' ? 'Prodej' : 'Pronájem',
+  image: p.mainImage?.asset?._ref ? `https://cdn.sanity.io/images/bo49wn0o/production/${p.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}` : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
+  area: p.area ? `${p.area} m²` : undefined,
+  sold: true,
+}));
+
+// Stats
+const totalValue = '23+ mil. Kč';
+const totalCount = soldProperties.length + 94;
+---
+
+<Layout title="Zrealizováno" description="Přehled úspěšně prodaných nemovitostí. Více než 100 spokojených klientů.">
+  <!-- Hero -->
+  <section class="py-20 bg-sand-100">
+    <div class="container-narrow">
+      <div class="max-w-3xl">
+        <p class="text-accent-700 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
+          Zrealizováno
+        </p>
+        <h1 class="font-heading text-5xl md:text-6xl text-sand-900 mb-6 animate-fade-in animate-delay-100">
+          Úspěšně prodáno
+        </h1>
+        <p class="text-sand-600 text-xl animate-fade-in animate-delay-200">
+          Přehled nemovitostí, které jsem úspěšně prodal. Každý prodej je výsledkem 
+          profesionálního přístupu a osobní péče o klienta.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-12 bg-white border-b border-sand-200">
+    <div class="container-narrow">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="font-heading text-4xl text-accent-700 font-semibold mb-1">
+            {totalCount}+
+          </div>
+          <div class="text-sand-600 text-sm">Prodaných nemovitostí</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-4xl text-accent-700 font-semibold mb-1">
+            {totalValue}
+          </div>
+          <div class="text-sand-600 text-sm">Celková hodnota</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-4xl text-accent-700 font-semibold mb-1">
+            98%
+          </div>
+          <div class="text-sand-600 text-sm">Spokojených klientů</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-4xl text-accent-700 font-semibold mb-1">
+            45 dnů
+          </div>
+          <div class="text-sand-600 text-sm">Průměrná doba prodeje</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sold Properties Grid -->
+  <section class="py-16">
+    <div class="container-narrow">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="font-heading text-2xl text-sand-900">Poslední prodané</h2>
+        <a href="/nemovitosti" class="text-accent-700 font-medium flex items-center gap-2 hover:gap-3 transition-all">
+          Aktuální nabídka
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {soldProperties.map((property, index) => (
+          <div class="animate-fade-in opacity-0" style={`animation-delay: ${index * 100}ms`}>
+            <PropertyCard {...property} />
+          </div>
+        ))}
+      </div>
+
+      {soldProperties.length === 0 && (
+        <p class="text-sand-500 text-center py-8">Zatím žádné prodané nemovitosti.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 bg-accent-800 text-white">
+    <div class="container-narrow text-center">
+      <h2 class="font-heading text-4xl md:text-5xl mb-6">
+        Chcete být další spokojený klient?
+      </h2>
+      <p class="text-white/80 max-w-2xl mx-auto mb-8 text-lg">
+        Kontaktujte mě a společně prodáme vaši nemovitost za nejlepší cenu 
+        a v co nejkratším čase.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/kontakt" class="btn bg-white text-accent-800 hover:bg-sand-100">
+          Kontaktovat mě
+        </a>
+        <a href="/reference" class="btn border border-white text-white hover:bg-white hover:text-accent-800">
+          Přečíst reference
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+</style>
