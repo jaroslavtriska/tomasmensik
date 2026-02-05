@@ -19,11 +19,16 @@ const deskStructure = (S: any) =>
       ),
     ])
 
+// Use project "TomasMensik" under org "Jaroslav Triska". Set in Vercel or .env:
+// SANITY_STUDIO_PROJECT_ID, SANITY_STUDIO_DATASET
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'bo49wn0o'
+const dataset = process.env.SANITY_STUDIO_DATASET || process.env.SANITY_DATASET || 'production'
+
 export default defineConfig({
   name: 'default',
   title: 'Menšík Reality',
-  projectId: 'bo49wn0o',
-  dataset: 'production',
+  projectId,
+  dataset,
   basePath: '/admin',
 
   plugins: [structureTool({ structure: deskStructure }), visionTool()],

@@ -4,12 +4,30 @@ If **https://tomasmensik.vercel.app/admin** loads but shows a **blank page**, th
 
 ---
 
+## Use the correct project (TomasMensik / Jaroslav Triska)
+
+The Studio and website must use the project **"TomasMensik"** under organization **"Jaroslav Triska"**, not "Reality demo" under "Lukas".
+
+1. Go to **[sanity.io/manage](https://sanity.io/manage)** and sign in.
+2. Switch to organization **"Jaroslav Triska"** (top-left or org switcher).
+3. Open or create the project **"TomasMensik"**.
+4. Copy the **project ID**:
+   - In the project, go to **API** in the left menu, or
+   - Check the URL: `https://www.sanity.io/manage/project/<project-id>`.
+5. Set this project ID everywhere:
+   - **Vercel:** Project → Settings → Environment Variables:
+     - `SANITY_STUDIO_PROJECT_ID` = your TomasMensik project ID (so `/admin` uses it).
+     - `PUBLIC_SANITY_PROJECT_ID` = same value (so the website fetches from it).
+     - Optionally `SANITY_STUDIO_DATASET` and `PUBLIC_SANITY_DATASET` = `production`.
+   - **Local:** In `sanity-studio/.env` and `astro-site/.env` set the same variables (see `sanity-studio/.env.example`).
+6. **Redeploy** on Vercel so the new env vars are used.
+
+---
+
 ## Step 1: Open your Sanity project
 
 1. Go to **[sanity.io/manage](https://sanity.io/manage)** and sign in.
-2. Open the project your site uses.  
-   In this repo it’s set to **project ID `bo49wn0o`** (see `sanity-studio/sanity.config.ts`).  
-   If you use a different project, open that one.
+2. Open the project your site uses: **"TomasMensik"** under **"Jaroslav Triska"** (see above for project ID).
 
 ---
 
