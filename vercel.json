@@ -1,5 +1,8 @@
 {
   "installCommand": "cd sanity-studio && npm ci && cd ../astro-site && npm ci",
   "buildCommand": "cd sanity-studio && npm run build && mkdir -p ../astro-site/public/admin && cp -r dist/* ../astro-site/public/admin/ && cd ../astro-site && npm run build",
-  "outputDirectory": "astro-site/dist"
+  "outputDirectory": "astro-site/dist",
+  "rewrites": [
+    { "source": "/static/:path*", "destination": "/admin/static/:path*" }
+  ]
 }

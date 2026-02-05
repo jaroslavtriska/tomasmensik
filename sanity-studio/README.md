@@ -67,9 +67,14 @@ npm run deploy
 
 Studio will be at `YOUR_PROJECT.sanity.studio`.
 
-## CORS
+## CORS (required for /admin to work)
+
+The Studio at **https://tomasmensik.vercel.app/admin** must be allowed to call the Sanity API.
 
 In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → **CORS origins**, add:
 
+- `https://tomasmensik.vercel.app` (production Studio)
 - `http://localhost:4321` (Astro dev)
-- Your production domain (e.g. `https://mensik-reality.cz`)
+- Your custom domain if you use one (e.g. `https://mensik-reality.cz`)
+
+**If /admin is blank:** see **[docs/ADMIN-SETUP.md](../docs/ADMIN-SETUP.md)** for step-by-step setup.
