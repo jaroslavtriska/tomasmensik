@@ -1,5 +1,7 @@
 # build output
 dist/
+# embedded Sanity Studio (built on Vercel)
+public/admin/
 # generated types
 .astro/
 

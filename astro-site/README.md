@@ -104,11 +104,11 @@ The repo has a root `vercel.json` so Vercel builds the Astro app from the `astro
    - `PUBLIC_SANITY_PROJECT_ID` = your Sanity project ID (e.g. `bo49wn0o`)
    - `PUBLIC_SANITY_DATASET` = `production` (or your dataset name)
 
-4. **Sanity CORS**
+4. **Sanity CORS** (required for the embedded Studio at `/admin`)
    - In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → **CORS origins**
-   - Add your Vercel URL, e.g. `https://your-project.vercel.app` and `https://your-domain.com`
+   - Add `https://your-project.vercel.app` (and your custom domain if you use one)
 
-5. **Deploy** – Vercel will run the build and deploy. Your site will be live at `https://your-project.vercel.app`. You can add a custom domain in Vercel (e.g. `mensik-reality.cz`).
+5. **Deploy** – Vercel will run the build and deploy. Your site will be live at `https://your-project.vercel.app`. The Sanity CMS is embedded at **`/admin`** (e.g. `https://your-project.vercel.app/admin`). You can add a custom domain in Vercel (e.g. `mensik-reality.cz`).
 
 ### Netlify
 
