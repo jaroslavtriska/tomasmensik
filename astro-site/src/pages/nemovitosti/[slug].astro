@@ -6,16 +6,27 @@ import type { SanityProperty, SanitySiteSettings } from '../../lib/sanity';
 
 // Fetch all properties for static paths
 export async function getStaticPaths() {
-  const properties = await client.fetch<SanityProperty[]>(`*[_type == "property"]`);
-  
-  return properties.map((property) => ({
-    params: { slug: property.slug.current },
-    props: { property },
-  }));
+  try {
+    const properties = await client.fetch<SanityProperty[]>(`*[_type == "property"]`) || [];
+    
+    return properties.map((property) => ({
+      params: { slug: property.slug.current },
+      props: { property },
+    }));
+  } catch (error) {
+    console.error('Error fetching properties for static paths:', error);
+    return [];
+  }
 }
 
 const { property } = Astro.props;
-const siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+let siteSettings: SanitySiteSettings | null = null;
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+} catch (error) {
+  console.error('Error fetching site settings:', error);
+  siteSettings = null;
+}
 
 // Build image URLs
 const getImageUrl = (ref: string) => {

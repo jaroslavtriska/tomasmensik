@@ -4,8 +4,14 @@ import PropertyCard from '../components/PropertyCard.astro';
 import { client, queries, formatPrice } from '../lib/sanity';
 import type { SanityProperty } from '../lib/sanity';
 
-// Fetch sold properties from Sanity
-const sanityProperties = await client.fetch<SanityProperty[]>(queries.soldProperties);
+// Fetch sold properties from Sanity with error handling
+let sanityProperties: SanityProperty[] = [];
+try {
+  sanityProperties = await client.fetch<SanityProperty[]>(queries.soldProperties) || [];
+} catch (error) {
+  console.error('Error fetching sold properties:', error);
+  sanityProperties = [];
+}
 
 // Transform for PropertyCard
 const soldProperties = sanityProperties.map(p => ({

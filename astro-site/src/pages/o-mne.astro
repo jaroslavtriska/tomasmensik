@@ -3,8 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import { client, queries } from '../lib/sanity';
 import type { SanityAbout } from '../lib/sanity';
 
-// Fetch about data from Sanity
-const about = await client.fetch<SanityAbout>(queries.about);
+// Fetch about data from Sanity with error handling
+let about: SanityAbout | null = null;
+try {
+  about = await client.fetch<SanityAbout>(queries.about);
+} catch (error) {
+  console.error('Error fetching about data:', error);
+  about = null;
+}
 
 // Build image URL helper
 const getImageUrl = (ref: string) => {

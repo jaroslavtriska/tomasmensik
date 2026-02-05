@@ -3,8 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import { client, queries, getServiceTypeLabel } from '../lib/sanity';
 import type { SanityTestimonial } from '../lib/sanity';
 
-// Fetch testimonials from Sanity
-const testimonials = await client.fetch<SanityTestimonial[]>(queries.allTestimonials);
+// Fetch testimonials from Sanity with error handling
+let testimonials: SanityTestimonial[] = [];
+try {
+  testimonials = await client.fetch<SanityTestimonial[]>(queries.allTestimonials) || [];
+} catch (error) {
+  console.error('Error fetching testimonials:', error);
+  testimonials = [];
+}
 
 // Stats
 const avgRating = '4.9';
@@ -65,7 +71,7 @@ const totalReviews = testimonials.length + 87;
   <section class="py-20">
     <div class="container-narrow">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {testimonials.map((testimonial, index) => (
+        {testimonials.length > 0 ? testimonials.map((testimonial, index) => (
           <div 
             class="bg-white border border-sand-200 p-8 hover:border-accent-300 hover:shadow-lg transition-all duration-300 animate-fade-in"
             style={`animation-delay: ${index * 100}ms`}
@@ -100,7 +106,11 @@ const totalReviews = testimonials.length + 87;
               </div>
             </div>
           </div>
-        ))}
+        )) : (
+          <div class="col-span-2 text-center py-12">
+            <p class="text-sand-500 text-lg">Reference budou brzy přidány.</p>
+          </div>
+        )}
       </div>
     </div>
   </section>

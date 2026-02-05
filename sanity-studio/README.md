@@ -1,86 +1,75 @@
-# Menšík Reality - Sanity CMS
+# Menšík Reality – Sanity CMS
 
-Content management system for the Tomáš Menšík real estate website.
+Content management for the Tomáš Menšík real estate site. You can edit **everything** from the CMS: hero image and text, section titles, contact info, navigation, footer, offers (properties), services, references, and about page.
 
-## Setup
-
-### 1. Create Sanity Project
-
-1. Go to [sanity.io/manage](https://sanity.io/manage)
-2. Create a new project
-3. Note your **Project ID** and **Dataset** name
-
-### 2. Configure
-
-Update the project ID in two files:
-
-**sanity.config.ts:**
-```ts
-projectId: 'YOUR_PROJECT_ID',
-dataset: 'production',
-```
-
-**sanity.cli.ts:**
-```ts
-projectId: 'YOUR_PROJECT_ID',
-dataset: 'production',
-```
-
-### 3. Install & Run
+## Quick start
 
 ```bash
+cd sanity-studio
 npm install
 npm run dev
 ```
 
-The studio will be available at `http://localhost:3333`
+Studio runs at **http://localhost:3333**. Log in with Google/GitHub or create a Sanity account.
 
-## Content Types
+### First-time content (seed)
 
-### Nemovitost (Property)
-- Title, slug, status (for sale/sold/reserved)
-- Type, property type, location, address
-- Price, area, disposition
-- Photos (main + gallery)
-- Description, parameters
-- Featured flag, order
+To fill the project with sample content (site settings, services, properties, testimonials):
 
-### Služba (Service)
-- Title, description, icon
-- Features list
-- Order
+1. In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → create a token with **Editor** rights.
+2. In `sanity-studio` run:
+   ```bash
+   SANITY_TOKEN=your_token npm run seed
+   ```
+3. In Studio, open **Nastavení webu** and add a hero image (optional); publish.
+
+## What you can edit in the CMS
+
+### Nastavení webu (first item in sidebar)
+
+Single “settings” document. All groups:
+
+- **Obecné** – site name (logo + page title), SEO description
+- **Úvodní sekce (Hero)** – hero image, tagline, title, subtitle, CTA button labels
+- **Sekce na úvodní stránce** – services block (title, description, button), properties block (title, description, link), CTA block (title, description, button)
+- **Kontakt** – phone, email, address, Instagram/Facebook, opening hours
+- **Patička** – brand name, tagline, copyright text, quick links
+- **Navigace** – menu items (label + URL). Leave empty to use default menu.
+
+### Nemovitosti (Property)
+
+Add/edit/remove offers. Each has title, slug, status (for sale / sold / reserved), type, location, price, main image, gallery, description, parameters, “featured on homepage” and order.
+
+### Služby (Service)
+
+Services listed on the site. Title, description, icon, feature list, order.
 
 ### Reference (Testimonial)
-- Client name, location
-- Text, service type, date
-- Featured flag, order
+
+Client testimonials. Name, location, text, service type, date, “featured on homepage”, order.
 
 ### O mně (About)
-- Name, subtitle, bio
-- Main photo + additional photos
-- Interests, stats
 
-### Nastavení webu (Site Settings)
-- Site name, description
-- Contact info (phone, email, address)
-- Social links
-- Hero section content
-- Opening hours
+Single about document: name, subtitle, bio, main photo, extra photos, interests, stats.
 
-## Deployment
+## Configure project ID (optional)
 
-### Deploy to Sanity.io
+If you use a different Sanity project:
+
+1. **sanity-studio**: set `projectId` and `dataset` in `sanity.config.ts` and `sanity.cli.ts`.
+2. **astro-site**: set `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` in `.env` (see `astro-site/.env.example`).
+
+## Deploy Studio
 
 ```bash
 npm run deploy
 ```
 
-This will deploy the studio to `YOUR_PROJECT.sanity.studio`
+Studio will be at `YOUR_PROJECT.sanity.studio`.
 
-## CORS Settings
+## CORS
 
-Add your website domains to CORS origins in [sanity.io/manage](https://sanity.io/manage):
+In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → **CORS origins**, add:
 
-- `http://localhost:4321` (development)
-- `https://your-domain.com` (production)
-- `https://your-domain.vercel.app` (Vercel preview)
+- `http://localhost:4321` (Astro dev)
+- Your production domain (e.g. `https://mensik-reality.cz`)

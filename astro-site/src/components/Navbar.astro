@@ -1,5 +1,8 @@
 ---
-const navLinks = [
+import { client, queries } from '../lib/sanity';
+import type { SanitySiteSettings } from '../lib/sanity';
+
+const defaultNavLinks = [
   { href: '/', label: 'Úvod' },
   { href: '/o-mne', label: 'O mně' },
   { href: '/sluzby', label: 'Služby' },
@@ -9,15 +12,21 @@ const navLinks = [
   { href: '/kontakt', label: 'Kontakt' },
 ];
 
+let siteSettings: SanitySiteSettings | null = null;
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+} catch (_) {}
+
+const siteName = siteSettings?.siteName || 'Tomáš Menšík';
+const navLinks = (siteSettings?.navLinks?.length ? siteSettings.navLinks.filter((l) => l.href && l.label).map((l) => ({ href: l.href!, label: l.label! })) : null) ?? defaultNavLinks;
 const currentPath = Astro.url.pathname;
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 bg-sand-50/95 backdrop-blur-sm border-b border-sand-200/50">
   <nav class="container-narrow">
     <div class="flex items-center justify-between h-20">
-      <!-- Logo -->
       <a href="/" class="font-heading text-2xl font-semibold text-sand-900 tracking-wide">
-        Tomáš Menšík
+        {siteName}
       </a>
 
       <!-- Desktop Navigation -->

@@ -11,6 +11,21 @@ export const client = createClient({
   useCdn: true, // Set to false for preview mode
 });
 
+// Safe fetch wrapper with error handling
+export async function safeFetch<T>(query: string, params?: Record<string, any>): Promise<T> {
+  try {
+    const result = await client.fetch<T>(query, params || {});
+    return result || ([] as T);
+  } catch (error) {
+    console.error('Sanity fetch error:', error);
+    // Return empty array for array queries, null for single queries
+    if (query.includes('[')) {
+      return [] as T;
+    }
+    return null as T;
+  }
+}
+
 // Image URL builder
 const builder = imageUrlBuilder(client);
 
@@ -71,6 +86,16 @@ export interface SanityAbout {
   stats?: { number: string; label: string }[];
 }
 
+export interface SanityNavLink {
+  label?: string;
+  href?: string;
+}
+
+export interface SanityFooterLink {
+  label?: string;
+  href?: string;
+}
+
 export interface SanitySiteSettings {
   _id: string;
   siteName: string;
@@ -82,8 +107,25 @@ export interface SanitySiteSettings {
   address?: string;
   openingHours?: { days: string; hours: string }[];
   heroImage?: SanityImageSource;
+  heroTagline?: string;
   heroTitle?: string;
   heroSubtitle?: string;
+  heroCtaOffer?: string;
+  heroCtaContact?: string;
+  servicesSectionTitle?: string;
+  servicesSectionDescription?: string;
+  servicesCtaLabel?: string;
+  propertiesSectionTitle?: string;
+  propertiesSectionDescription?: string;
+  propertiesCtaLabel?: string;
+  ctaTitle?: string;
+  ctaDescription?: string;
+  ctaButtonLabel?: string;
+  footerBrandName?: string;
+  footerTagline?: string;
+  copyrightText?: string;
+  footerQuickLinks?: SanityFooterLink[];
+  navLinks?: SanityNavLink[];
 }
 
 // GROQ Queries

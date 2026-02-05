@@ -1,26 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PropertyCard from '../components/PropertyCard.astro';
-import { client, queries, formatPrice } from '../lib/sanity';
+import { client, queries, formatPrice, urlFor } from '../lib/sanity';
 import type { SanityProperty, SanityService, SanitySiteSettings } from '../lib/sanity';
 
-// Fetch data from Sanity
-const siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
-const sanityServices = await client.fetch<SanityService[]>(queries.allServices);
-const sanityProperties = await client.fetch<SanityProperty[]>(queries.featuredProperties);
+// Fetch data from Sanity with error handling
+let siteSettings: SanitySiteSettings | null = null;
+let sanityServices: SanityService[] = [];
+let sanityProperties: SanityProperty[] = [];
 
-// Transform properties for PropertyCard component
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+  sanityServices = await client.fetch<SanityService[]>(queries.allServices) || [];
+  sanityProperties = await client.fetch<SanityProperty[]>(queries.featuredProperties) || [];
+} catch (error) {
+  console.error('Error fetching data from Sanity:', error);
+  sanityServices = [];
+  sanityProperties = [];
+}
+
+// Transform properties for PropertyCard (use urlFor for correct image URLs)
 const featuredProperties = sanityProperties.map(p => ({
   title: p.title,
   slug: p.slug.current,
   location: p.location,
   price: formatPrice(p.price),
   type: p.type === 'prodej' ? 'Prodej' : 'Pronájem',
-  image: p.mainImage ? `https://cdn.sanity.io/images/bo49wn0o/production/${p.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}` : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
+  image: p.mainImage ? urlFor(p.mainImage).width(800).height(600).auto('format').url() : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
   area: p.area ? `${p.area} m²` : undefined,
 }));
 
-// Use first 3 services for preview
 const services = sanityServices.slice(0, 3).map(s => ({
   title: s.title,
   description: s.description,
@@ -29,27 +38,28 @@ const services = sanityServices.slice(0, 3).map(s => ({
 
 const phone = siteSettings?.phone || '+420 123 456 789';
 const email = siteSettings?.email || 'tomas@mensik-reality.cz';
+const heroImageUrl = siteSettings?.heroImage ? urlFor(siteSettings.heroImage).width(1920).height(1080).auto('format').url() : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop';
 ---
 
 <Layout title="Úvod">
   <!-- Hero Section -->
   <section class="relative min-h-[90vh] flex items-center">
-    <!-- Background Image -->
     <div class="absolute inset-0 z-0">
       <img 
-        src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop" 
-        alt="Moderní interiér" 
+        src={heroImageUrl} 
+        alt="" 
         class="w-full h-full object-cover"
       />
       <div class="absolute inset-0 bg-gradient-to-r from-sand-950/90 via-sand-950/70 to-sand-950/40"></div>
     </div>
 
-    <!-- Content -->
     <div class="container-narrow relative z-10 py-20">
       <div class="max-w-2xl">
-        <p class="text-accent-400 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
-          Realitní makléř
-        </p>
+        {siteSettings?.heroTagline && (
+          <p class="text-accent-400 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
+            {siteSettings.heroTagline}
+          </p>
+        )}
         <h1 class="font-heading text-5xl md:text-6xl lg:text-7xl text-white mb-6 animate-fade-in animate-delay-100">
           {siteSettings?.heroTitle || 'Tomáš Menšík'}
         </h1>
@@ -58,10 +68,10 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
         </p>
         <div class="flex flex-wrap gap-4 animate-fade-in animate-delay-300">
           <a href="/nemovitosti" class="btn btn-primary">
-            Prohlédnout nabídku
+            {siteSettings?.heroCtaOffer || 'Prohlédnout nabídku'}
           </a>
           <a href="/kontakt" class="btn bg-white/20 backdrop-blur-sm border border-white text-white hover:bg-white hover:text-sand-900">
-            Kontaktujte mě
+            {siteSettings?.heroCtaContact || 'Kontaktujte mě'}
           </a>
         </div>
 
@@ -88,14 +98,14 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
   <section class="py-24 bg-white">
     <div class="container-narrow">
       <div class="text-center mb-16">
-        <h2 class="font-heading text-4xl md:text-5xl text-sand-900 mb-4">Co pro vás mohu udělat</h2>
+        <h2 class="font-heading text-4xl md:text-5xl text-sand-900 mb-4">{siteSettings?.servicesSectionTitle || 'Co pro vás mohu udělat'}</h2>
         <p class="text-sand-600 max-w-2xl mx-auto">
-          Nabízím kompletní služby v oblasti nemovitostí. Od prvního kontaktu až po úspěšný prodej.
+          {siteSettings?.servicesSectionDescription || 'Nabízím kompletní služby v oblasti nemovitostí. Od prvního kontaktu až po úspěšný prodej.'}
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {services.map((service) => (
+        {services.length > 0 ? services.map((service) => (
           <div class="group p-8 bg-sand-50 hover:bg-accent-700 transition-all duration-500 cursor-pointer">
             <div class="w-14 h-14 rounded-full bg-accent-100 group-hover:bg-white/20 flex items-center justify-center mb-6 transition-colors">
               {service.icon === 'home' && (
@@ -136,12 +146,16 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
               {service.description}
             </p>
           </div>
-        ))}
+        )) : (
+          <div class="col-span-3 text-center py-8">
+            <p class="text-sand-500">Služby budou brzy přidány.</p>
+          </div>
+        )}
       </div>
 
       <div class="text-center mt-12">
         <a href="/sluzby" class="btn btn-outline">
-          Všechny služby
+          {siteSettings?.servicesCtaLabel || 'Všechny služby'}
         </a>
       </div>
     </div>
@@ -152,13 +166,13 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
     <div class="container-narrow">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
         <div>
-          <h2 class="font-heading text-4xl md:text-5xl text-sand-900 mb-4">Nemovitosti v nabídce</h2>
+          <h2 class="font-heading text-4xl md:text-5xl text-sand-900 mb-4">{siteSettings?.propertiesSectionTitle || 'Nemovitosti v nabídce'}</h2>
           <p class="text-sand-600 max-w-xl">
-            Vyberte si z aktuální nabídky nemovitostí v Jihlavě a okolí.
+            {siteSettings?.propertiesSectionDescription || 'Vyberte si z aktuální nabídky nemovitostí v Jihlavě a okolí.'}
           </p>
         </div>
         <a href="/nemovitosti" class="mt-4 md:mt-0 text-accent-700 font-medium flex items-center gap-2 hover:gap-3 transition-all">
-          Zobrazit vše
+          {siteSettings?.propertiesCtaLabel || 'Zobrazit vše'}
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
@@ -181,14 +195,13 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
   <section class="py-24 bg-accent-800 text-white">
     <div class="container-narrow text-center">
       <h2 class="font-heading text-4xl md:text-5xl mb-6">
-        Chcete prodat nemovitost?
+        {siteSettings?.ctaTitle || 'Chcete prodat nemovitost?'}
       </h2>
       <p class="text-white/80 max-w-2xl mx-auto mb-8 text-lg">
-        Kontaktujte mě pro nezávaznou konzultaci. Pomohu vám s oceněním, 
-        přípravou a prodejem vaší nemovitosti za nejlepší možnou cenu.
+        {siteSettings?.ctaDescription || 'Kontaktujte mě pro nezávaznou konzultaci. Pomohu vám s oceněním, přípravou a prodejem vaší nemovitosti za nejlepší možnou cenu.'}
       </p>
       <a href="/kontakt" class="btn bg-white text-accent-800 hover:bg-sand-100">
-        Domluvit schůzku
+        {siteSettings?.ctaButtonLabel || 'Domluvit schůzku'}
       </a>
     </div>
   </section>

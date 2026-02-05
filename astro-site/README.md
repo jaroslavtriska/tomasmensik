@@ -90,10 +90,25 @@ The Sanity Studio will be available at `http://localhost:3333`
 
 ### Vercel (Recommended)
 
-1. Push your code to GitHub
-2. Import the project in [Vercel](https://vercel.com)
-3. Set environment variables in Vercel dashboard
-4. Deploy!
+The repo has a root `vercel.json` so Vercel builds the Astro app from the `astro-site` folder.
+
+1. **Push your code to GitHub** (if not already).
+
+2. **Import in Vercel**
+   - Go to [vercel.com](https://vercel.com) → Add New → Project
+   - Import your Git repository
+   - Leave **Root Directory** as the repo root (the root `vercel.json` handles the monorepo)
+
+3. **Environment variables** (optional if you use the defaults in code)
+   - **Settings → Environment Variables** in the Vercel project:
+   - `PUBLIC_SANITY_PROJECT_ID` = your Sanity project ID (e.g. `bo49wn0o`)
+   - `PUBLIC_SANITY_DATASET` = `production` (or your dataset name)
+
+4. **Sanity CORS**
+   - In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → **CORS origins**
+   - Add your Vercel URL, e.g. `https://your-project.vercel.app` and `https://your-domain.com`
+
+5. **Deploy** – Vercel will run the build and deploy. Your site will be live at `https://your-project.vercel.app`. You can add a custom domain in Vercel (e.g. `mensik-reality.cz`).
 
 ### Netlify
 

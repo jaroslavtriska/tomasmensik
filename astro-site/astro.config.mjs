@@ -7,7 +7,15 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://mensik-reality.cz', // Replace with actual domain
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        '/admin': {
+          target: 'http://localhost:3333',
+          changeOrigin: true,
+        },
+      },
+    },
   },
   // Enable SSG for all pages
   output: 'static',

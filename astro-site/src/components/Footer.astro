@@ -2,56 +2,52 @@
 import { client, queries } from '../lib/sanity';
 import type { SanitySiteSettings } from '../lib/sanity';
 
-// Fetch site settings from Sanity
-const siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+let siteSettings: SanitySiteSettings | null = null;
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+} catch (_) {}
 
-// Use Sanity data or defaults
 const contactInfo = {
   phone: siteSettings?.phone || '+420 123 456 789',
   email: siteSettings?.email || 'tomas@mensik-reality.cz',
   instagram: siteSettings?.instagram || 'https://instagram.com/tomasmensik',
-  address: siteSettings?.address || 'Jihlava, Česká republika'
+  address: siteSettings?.address || 'Jihlava, Česká republika',
 };
 
+const footerBrandName = siteSettings?.footerBrandName || siteSettings?.siteName || 'Tomáš Menšík';
+const footerTagline = siteSettings?.footerTagline || 'Profesionální realitní služby v Jihlavě a okolí. Pomohu vám s prodejem, nákupem i oceněním nemovitostí.';
 const currentYear = new Date().getFullYear();
+const copyrightText = siteSettings?.copyrightText?.replace(/\d{4}/, String(currentYear)) || `© ${currentYear} Tomáš Menšík. Všechna práva vyhrazena.`;
+
+const defaultQuickLinks = [
+  { href: '/nemovitosti', label: 'Nemovitosti v nabídce' },
+  { href: '/sluzby', label: 'Služby' },
+  { href: '/kontakt', label: 'Kontaktujte mě' },
+  { href: '/o-mne', label: 'O mně' },
+];
+const quickLinks = (siteSettings?.footerQuickLinks?.length ? siteSettings.footerQuickLinks.filter((l) => l.href && l.label) : null) ?? defaultQuickLinks;
 ---
 
 <footer class="bg-sand-900 text-sand-100">
   <div class="container-narrow py-16">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-      <!-- Brand -->
       <div>
-        <h3 class="font-heading text-2xl text-white mb-4">Tomáš Menšík</h3>
+        <h3 class="font-heading text-2xl text-white mb-4">{footerBrandName}</h3>
         <p class="text-sand-400 text-sm leading-relaxed">
-          Profesionální realitní služby v Jihlavě a okolí. Pomohu vám s prodejem, 
-          nákupem i oceněním nemovitostí.
+          {footerTagline}
         </p>
       </div>
 
-      <!-- Quick Links -->
       <div>
         <h4 class="font-heading text-lg text-white mb-4">Rychlé odkazy</h4>
         <ul class="space-y-2">
-          <li>
-            <a href="/nemovitosti" class="text-sand-400 hover:text-white text-sm transition-colors">
-              Nemovitosti v nabídce
-            </a>
-          </li>
-          <li>
-            <a href="/sluzby" class="text-sand-400 hover:text-white text-sm transition-colors">
-              Služby
-            </a>
-          </li>
-          <li>
-            <a href="/kontakt" class="text-sand-400 hover:text-white text-sm transition-colors">
-              Kontaktujte mě
-            </a>
-          </li>
-          <li>
-            <a href="/o-mne" class="text-sand-400 hover:text-white text-sm transition-colors">
-              O mně
-            </a>
-          </li>
+          {quickLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sand-400 hover:text-white text-sm transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -119,10 +115,9 @@ const currentYear = new Date().getFullYear();
       </div>
     </div>
 
-    <!-- Copyright -->
     <div class="border-t border-sand-800 mt-12 pt-8 text-center">
       <p class="text-sand-500 text-sm">
-        © {currentYear} Tomáš Menšík. Všechna práva vyhrazena.
+        {copyrightText}
       </p>
     </div>
   </div>

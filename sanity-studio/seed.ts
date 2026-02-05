@@ -14,12 +14,12 @@ const client = createClient({
 async function seed() {
   console.log('🌱 Starting seed...')
 
-  // 1. Site Settings
+  // 1. Site Settings (singleton – edit everything from CMS)
   console.log('📝 Creating site settings...')
   await client.createOrReplace({
     _id: 'siteSettings',
     _type: 'siteSettings',
-    siteName: 'Tomáš Menšík - Reality',
+    siteName: 'Tomáš Menšík',
     siteDescription: 'Profesionální realitní služby v Jihlavě a okolí. Prodej, nákup a pronájem nemovitostí.',
     phone: '+420 123 456 789',
     email: 'tomas@mensik-reality.cz',
@@ -30,8 +30,23 @@ async function seed() {
       { _key: 'saturday', days: 'Sobota', hours: 'Po domluvě' },
       { _key: 'sunday', days: 'Neděle', hours: 'Zavřeno' },
     ],
+    heroTagline: 'Realitní makléř',
     heroTitle: 'Tomáš Menšík',
     heroSubtitle: 'Pomohu vám najít vysněný domov nebo prodat vaši nemovitost za nejlepší cenu. Profesionální přístup a osobní péče v Jihlavě a okolí.',
+    heroCtaOffer: 'Prohlédnout nabídku',
+    heroCtaContact: 'Kontaktujte mě',
+    servicesSectionTitle: 'Co pro vás mohu udělat',
+    servicesSectionDescription: 'Nabízím kompletní služby v oblasti nemovitostí. Od prvního kontaktu až po úspěšný prodej.',
+    servicesCtaLabel: 'Všechny služby',
+    propertiesSectionTitle: 'Nemovitosti v nabídce',
+    propertiesSectionDescription: 'Vyberte si z aktuální nabídky nemovitostí v Jihlavě a okolí.',
+    propertiesCtaLabel: 'Zobrazit vše',
+    ctaTitle: 'Chcete prodat nemovitost?',
+    ctaDescription: 'Kontaktujte mě pro nezávaznou konzultaci. Pomohu vám s oceněním, přípravou a prodejem vaší nemovitosti za nejlepší možnou cenu.',
+    ctaButtonLabel: 'Domluvit schůzku',
+    footerBrandName: 'Tomáš Menšík',
+    footerTagline: 'Profesionální realitní služby v Jihlavě a okolí. Pomohu vám s prodejem, nákupem i oceněním nemovitostí.',
+    copyrightText: '© 2024 Tomáš Menšík. Všechna práva vyhrazena.',
   })
 
   // 2. About

@@ -2,13 +2,23 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { client, queries } from '../lib/sanity';
+import type { SanitySiteSettings } from '../lib/sanity';
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = 'Tomáš Menšík - Realitní makléř. Profesionální služby v oblasti prodeje a pronájmu nemovitostí.' } = Astro.props;
+const { title, description } = Astro.props;
+
+let siteSettings: SanitySiteSettings | null = null;
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+} catch (_) {}
+
+const siteName = siteSettings?.siteName || 'Tomáš Menšík';
+const metaDescription = description ?? siteSettings?.siteDescription ?? 'Realitní makléř. Profesionální služby v oblasti prodeje a pronájmu nemovitostí.';
 ---
 
 <!DOCTYPE html>
@@ -16,10 +26,10 @@ const { title, description = 'Tomáš Menšík - Realitní makléř. Profesioná
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title} | Tomáš Menšík</title>
+    <title>{title} | {siteName}</title>
   </head>
   <body class="min-h-screen flex flex-col">
     <Navbar />
