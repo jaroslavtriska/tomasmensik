@@ -4,7 +4,7 @@
 import { createClient } from '@sanity/client'
 
 const client = createClient({
-  projectId: process.env.SANITY_PROJECT_ID || 'bo49wn0o',
+  projectId: process.env.SANITY_PROJECT_ID || '2mnybhg0',
   dataset: 'production',
   apiVersion: '2024-01-01',
   token: process.env.SANITY_TOKEN, // Need a write token from sanity.io/manage

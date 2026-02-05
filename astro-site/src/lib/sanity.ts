@@ -5,7 +5,7 @@ import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
 // Sanity client – use same project as Studio: "TomasMensik" (org Jaroslav Triska)
 // Set PUBLIC_SANITY_PROJECT_ID and PUBLIC_SANITY_DATASET in Vercel / .env
 export const client = createClient({
-  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'bo49wn0o',
+  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0',
   dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-01-01',
   useCdn: true, // Set to false for preview mode

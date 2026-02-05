@@ -101,7 +101,7 @@ The repo has a root `vercel.json` so Vercel builds the Astro app from the `astro
 
 3. **Environment variables** (optional if you use the defaults in code)
    - **Settings → Environment Variables** in the Vercel project:
-   - `PUBLIC_SANITY_PROJECT_ID` = your Sanity project ID (e.g. `bo49wn0o`)
+   - `PUBLIC_SANITY_PROJECT_ID` = your Sanity project ID (e.g. `2mnybhg0`)
    - `PUBLIC_SANITY_DATASET` = `production` (or your dataset name)
 
 4. **Sanity CORS** (required for the embedded Studio at `/admin`)

@@ -20,7 +20,7 @@ const soldProperties = sanityProperties.map(p => ({
   location: p.location,
   price: formatPrice(p.price),
   type: p.type === 'prodej' ? 'Prodej' : 'Pronájem',
-  image: p.mainImage?.asset?._ref ? `https://cdn.sanity.io/images/bo49wn0o/production/${p.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}` : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
+  image: p.mainImage?.asset?._ref ? `https://cdn.sanity.io/images/2mnybhg0/production/${p.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}` : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
   area: p.area ? `${p.area} m²` : undefined,
   sold: true,
 }));

@@ -90,10 +90,10 @@ If the project has no documents yet:
 
 | Step | What to do |
 |------|------------|
-| 1 | Open project at [sanity.io/manage](https://sanity.io/manage) (e.g. `bo49wn0o`) |
+| 1 | Open project at [sanity.io/manage](https://sanity.io/manage) (e.g. `2mnybhg0`) |
 | 2 | **API** → **CORS origins** → add `https://tomasmensik.vercel.app` |
 | 3 | Confirm dataset is **production** (or the one in `sanity.config.ts`) |
 | 4 | Open `/admin`, log in, check for errors in browser Console |
 | 5 | Create **Nastavení webu** or run `npm run seed` if the dataset is empty |
 
-The Studio in this repo is already configured to use **project ID `bo49wn0o`** and **dataset `production`**. Once CORS is set and you’re logged in, it’s connected to that real Sanity backend.
+The Studio in this repo is already configured to use **project ID `2mnybhg0`** and **dataset `production`**. Once CORS is set and you’re logged in, it’s connected to that real Sanity backend.
