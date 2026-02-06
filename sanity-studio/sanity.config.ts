@@ -40,12 +40,11 @@ export default defineConfig({
   },
 
   document: {
-    actions: (input, { schemaType }) =>
-      singletonTypes.has(schemaType)
-        ? input.filter(
-            (action) =>
-              action && ['publish', 'discardChanges', 'restore'].includes(action)
-          )
-        : input,
+    actions: (prev, {schemaType}) => {
+      if (!singletonTypes.has(schemaType)) return prev
+
+      const allowed = new Set(['publish', 'discardChanges', 'restore'])
+      return prev.filter((item) => item.action && allowed.has(item.action))
+    },
   },
 })
