@@ -5,7 +5,7 @@ export default defineType({
   title: 'Nastavení webu',
   type: 'document',
   groups: [
-    { name: 'general', title: 'Obecné', default: true },
+    { name: 'general', title: 'Obecné & Branding', default: true },
     { name: 'hero', title: 'Úvodní sekce (Hero)' },
     { name: 'sections', title: 'Sekce na úvodní stránce' },
     { name: 'contact', title: 'Kontakt' },
@@ -29,6 +29,56 @@ export default defineType({
       group: 'general',
       rows: 3,
       description: 'Pro vyhledávače a sdílení na sociálních sítích',
+    }),
+    defineField({
+      name: 'logoImage',
+      title: 'Logo (obrázek)',
+      type: 'image',
+      group: 'general',
+      options: {
+        hotspot: true,
+      },
+      description: 'Volitelné logo v záhlaví. Pokud není nastavené, použije se jen textový název webu.',
+    }),
+    defineField({
+      name: 'logoAlt',
+      title: 'Popisek loga (alt text)',
+      type: 'string',
+      group: 'general',
+      description: 'Pro přístupnost a SEO, např. „Logo Tomáš Menšík - Reality“',
+    }),
+    defineField({
+      name: 'colorTheme',
+      title: 'Barevné téma',
+      type: 'string',
+      group: 'general',
+      options: {
+        list: [
+          { title: 'Zelené (výchozí)', value: 'green' },
+          { title: 'Modré', value: 'blue' },
+          { title: 'Zlaté', value: 'amber' },
+          { title: 'Tmavé', value: 'dark' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'green',
+      description: 'Rychlá změna hlavních barev webu.',
+    }),
+    defineField({
+      name: 'fontVariant',
+      title: 'Styl písma',
+      type: 'string',
+      group: 'general',
+      options: {
+        list: [
+          { title: 'Klasické (Cormorant + Outfit)', value: 'classic' },
+          { title: 'Elegantní (Playfair + Inter)', value: 'elegant' },
+          { title: 'Moderní (DM Sans)', value: 'modern' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'classic',
+      description: 'Vyberte kombinaci písem pro celý web.',
     }),
     // Hero
     defineField({

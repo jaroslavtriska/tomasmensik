@@ -1,5 +1,5 @@
 ---
-import { client, queries } from '../lib/sanity';
+import { client, queries, urlFor } from '../lib/sanity';
 import type { SanitySiteSettings } from '../lib/sanity';
 
 const defaultNavLinks = [
@@ -19,14 +19,29 @@ try {
 
 const siteName = siteSettings?.siteName || 'Tomáš Menšík';
 const navLinks = (siteSettings?.navLinks?.length ? siteSettings.navLinks.filter((l) => l.href && l.label).map((l) => ({ href: l.href!, label: l.label! })) : null) ?? defaultNavLinks;
+const logoUrl = siteSettings?.logoImage ? urlFor(siteSettings.logoImage).width(180).height(48).fit('max').auto('format').url() : null;
+const logoAlt = siteSettings?.logoAlt || `${siteName} - logo`;
 const currentPath = Astro.url.pathname;
 ---
 
 <header class="fixed top-0 left-0 right-0 z-50 bg-sand-50/95 backdrop-blur-sm border-b border-sand-200/50">
   <nav class="container-narrow">
     <div class="flex items-center justify-between h-20">
-      <a href="/" class="font-heading text-2xl font-semibold text-sand-900 tracking-wide">
-        {siteName}
+      <a href="/" class="flex items-center gap-3">
+        {logoUrl ? (
+          <>
+            <img
+              src={logoUrl}
+              alt={logoAlt}
+              class="h-10 w-auto object-contain"
+              loading="lazy"
+            />
+          </>
+        ) : (
+          <span class="font-heading text-2xl font-semibold text-sand-900 tracking-wide">
+            {siteName}
+          </span>
+        )}
       </a>
 
       <!-- Desktop Navigation -->

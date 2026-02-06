@@ -19,6 +19,8 @@ try {
 
 const siteName = siteSettings?.siteName || 'Tomáš Menšík';
 const metaDescription = description ?? siteSettings?.siteDescription ?? 'Realitní makléř. Profesionální služby v oblasti prodeje a pronájmu nemovitostí.';
+const colorThemeClass = `theme-${siteSettings?.colorTheme || 'green'}`;
+const fontClass = `font-${siteSettings?.fontVariant || 'classic'}`;
 ---
 
 <!DOCTYPE html>
@@ -31,7 +33,7 @@ const metaDescription = description ?? siteSettings?.siteDescription ?? 'Realitn
     <meta name="generator" content={Astro.generator} />
     <title>{title} | {siteName}</title>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class:list={['min-h-screen flex flex-col', colorThemeClass, fontClass]}>
     <Navbar />
     <main class="flex-grow">
       <slot />

@@ -100,6 +100,10 @@ export interface SanitySiteSettings {
   _id: string;
   siteName: string;
   siteDescription?: string;
+  logoImage?: SanityImageSource;
+  logoAlt?: string;
+  colorTheme?: 'green' | 'blue' | 'amber' | 'dark';
+  fontVariant?: 'classic' | 'elegant' | 'modern';
   phone?: string;
   email?: string;
   instagram?: string;

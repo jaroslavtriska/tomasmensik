@@ -21,6 +21,8 @@ async function seed() {
     _type: 'siteSettings',
     siteName: 'Tomáš Menšík',
     siteDescription: 'Profesionální realitní služby v Jihlavě a okolí. Prodej, nákup a pronájem nemovitostí.',
+    colorTheme: 'green',
+    fontVariant: 'classic',
     phone: '+420 123 456 789',
     email: 'tomas@mensik-reality.cz',
     instagram: 'https://instagram.com/tomasmensik',
