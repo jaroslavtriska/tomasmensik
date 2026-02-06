@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { client, queries, urlFor } from '../lib/sanity';
+import type { SanityPartner, SanitySiteSettings } from '../lib/sanity';
+
+let siteSettings: SanitySiteSettings | null = null;
+let partners: SanityPartner[] = [];
+
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+  partners = await client.fetch<SanityPartner[]>(queries.allPartners) || [];
+} catch (error) {
+  console.error('Error fetching cooperation data:', error);
+  partners = [];
+}
+
+const title = siteSettings?.cooperationTitle || 'Spolupráce';
+const subtitle = siteSettings?.cooperationSubtitle || 'Firmy a specialisté, se kterými dlouhodobě spolupracujeme.';
+---
+
+<Layout title={title}>
+  <section class="py-20 bg-sand-100">
+    <div class="container-narrow">
+      <div class="max-w-3xl">
+        <p class="text-accent-700 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
+          Spolupráce
+        </p>
+        <h1 class="font-heading text-5xl md:text-6xl text-sand-900 mb-6 animate-fade-in animate-delay-100">
+          {title}
+        </h1>
+        <p class="text-sand-600 text-xl animate-fade-in animate-delay-200">
+          {subtitle}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24">
+    <div class="container-narrow">
+      {partners.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {partners.map((partner) => (
+            <a
+              href={partner.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group p-6 border border-sand-200 hover:border-accent-300 bg-white hover:shadow-lg transition-all duration-300 flex flex-col gap-4"
+            >
+              {partner.logo && (
+                <div class="h-14 flex items-center">
+                  <img
+                    src={urlFor(partner.logo).width(220).height(80).fit('max').auto('format').url()}
+                    alt={partner.name}
+                    class="h-full w-auto object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div>
+                <p class="text-xs uppercase tracking-[0.15em] text-sand-500 mb-1">
+                  {partner.category || 'Partner'}
+                </p>
+                <h2 class="font-heading text-xl text-sand-900 group-hover:text-accent-700 transition-colors">
+                  {partner.name}
+                </h2>
+                {partner.description && (
+                  <p class="text-sand-600 text-sm mt-2">
+                    {partner.description}
+                  </p>
+                )}
+              </div>
+              <span class="mt-auto text-accent-700 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                Navštívit web
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-sand-500 text-center py-12">
+          Zatím nejsou přidáni žádní partneři spolupráce.
+        </p>
+      )}
+    </div>
+  </section>
+</Layout>
+

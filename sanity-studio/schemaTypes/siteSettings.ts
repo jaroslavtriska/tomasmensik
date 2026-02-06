@@ -124,7 +124,7 @@ export default defineType({
       group: 'hero',
       initialValue: 'Kontaktujte mě',
     }),
-    // Homepage sections
+    // Homepage + extra sections
     defineField({
       name: 'servicesSectionTitle',
       title: 'Sekce Služby – nadpis',
@@ -190,6 +190,36 @@ export default defineType({
       type: 'string',
       group: 'sections',
       initialValue: 'Domluvit schůzku',
+    }),
+    defineField({
+      name: 'careerTitle',
+      title: 'Kariéra – nadpis',
+      type: 'string',
+      group: 'sections',
+      initialValue: 'Kariéra',
+    }),
+    defineField({
+      name: 'careerSubtitle',
+      title: 'Kariéra – podnadpis',
+      type: 'text',
+      group: 'sections',
+      rows: 2,
+      initialValue: 'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.',
+    }),
+    defineField({
+      name: 'cooperationTitle',
+      title: 'Spolupráce – nadpis',
+      type: 'string',
+      group: 'sections',
+      initialValue: 'Spolupráce',
+    }),
+    defineField({
+      name: 'cooperationSubtitle',
+      title: 'Spolupráce – popis',
+      type: 'text',
+      group: 'sections',
+      rows: 2,
+      initialValue: 'Firmy a specialisté, se kterými dlouhodobě spolupracujeme.',
     }),
     // Contact
     defineField({

@@ -49,6 +49,10 @@ async function seed() {
     footerBrandName: 'Tomáš Menšík',
     footerTagline: 'Profesionální realitní služby v Jihlavě a okolí. Pomohu vám s prodejem, nákupem i oceněním nemovitostí.',
     copyrightText: '© 2024 Tomáš Menšík. Všechna práva vyhrazena.',
+    careerTitle: 'Kariéra',
+    careerSubtitle: 'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.',
+    cooperationTitle: 'Spolupráce',
+    cooperationSubtitle: 'Firmy a specialisté, se kterými dlouhodobě spolupracujeme.',
   })
 
   // 2. About

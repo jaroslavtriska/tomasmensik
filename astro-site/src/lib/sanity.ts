@@ -86,6 +86,16 @@ export interface SanityAbout {
   stats?: { number: string; label: string }[];
 }
 
+export interface SanityPartner {
+  _id: string;
+  name: string;
+  description?: string;
+  website: string;
+  logo?: SanityImageSource;
+  category?: string;
+  order?: number;
+}
+
 export interface SanityNavLink {
   label?: string;
   href?: string;
@@ -130,6 +140,10 @@ export interface SanitySiteSettings {
   copyrightText?: string;
   footerQuickLinks?: SanityFooterLink[];
   navLinks?: SanityNavLink[];
+  careerTitle?: string;
+  careerSubtitle?: string;
+  cooperationTitle?: string;
+  cooperationSubtitle?: string;
 }
 
 // GROQ Queries
@@ -149,6 +163,8 @@ export const queries = {
   
   // About
   about: `*[_type == "about"][0]`,
+  // Partners
+  allPartners: `*[_type == "partner"] | order(order asc, _createdAt asc)`,
   
   // Site Settings
   siteSettings: `*[_type == "siteSettings"][0]`,
