@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* Theme configuration */
 @theme {
-  --font-heading: 'Cormorant Garamond', serif;
-  --font-body: 'Outfit', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Poppins', sans-serif;
   
   /* Color palette - warm, sophisticated tones */
   --color-sand-50: #faf8f5;
@@ -53,7 +53,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Font variants controlled from CMS (siteSettings.fontVariant) */
 body.font-classic {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body.font-classic h1,
@@ -62,11 +62,11 @@ body.font-classic h3,
 body.font-classic h4,
 body.font-classic h5,
 body.font-classic h6 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body.font-elegant {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body.font-elegant h1,
@@ -75,11 +75,11 @@ body.font-elegant h3,
 body.font-elegant h4,
 body.font-elegant h5,
 body.font-elegant h6 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body.font-modern {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body.font-modern h1,
@@ -88,8 +88,7 @@ body.font-modern h3,
 body.font-modern h4,
 body.font-modern h5,
 body.font-modern h6 {
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: 0.04em;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Color themes controlled from CMS (siteSettings.colorTheme) */

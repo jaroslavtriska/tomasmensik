@@ -35,9 +35,19 @@ const getImageUrl = (ref: string) => {
 };
 
 const mainImageUrl = property.mainImage?.asset?._ref ? getImageUrl(property.mainImage.asset._ref) : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=800&fit=crop';
-const images = property.images?.map((img: any) => getImageUrl(img.asset._ref)).filter(Boolean) || [mainImageUrl];
+const images = property.images?.map((img: any) => getImageUrl(img.asset._ref)).filter(Boolean) || [];
 if (!images.includes(mainImageUrl)) {
   images.unshift(mainImageUrl);
+}
+
+// Prepare gallery items (images + videos)
+const galleryItems: Array<{type: 'image' | 'video', url: string}> = images.map(url => ({type: 'image', url}));
+if (property.videos) {
+  property.videos.forEach((video: any) => {
+    if (video.url) {
+      galleryItems.push({type: 'video', url: video.url});
+    }
+  });
 }
 
 const phone = siteSettings?.phone || '+420 123 456 789';
@@ -67,7 +77,7 @@ const typeLabel = property.type === 'prodej' ? 'Prodej' : 'Pronájem';
         <!-- Left Column - Images & Description -->
         <div class="lg:col-span-2">
           <!-- Gallery -->
-          <ImageGallery images={images} title={property.title} />
+          <ImageGallery images={images} videos={property.videos} title={property.title} />
 
           <!-- Description -->
           {property.description && (

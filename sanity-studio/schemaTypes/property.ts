@@ -112,6 +112,31 @@ export default defineType({
       of: [{type: 'image', options: {hotspot: true}}],
     }),
     defineField({
+      name: 'videos',
+      title: 'Videa',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'url',
+              title: 'URL videa',
+              type: 'url',
+              description: 'URL videa z YouTube, Vimeo nebo jiného zdroje',
+            },
+            {
+              name: 'file',
+              title: 'Video soubor',
+              type: 'file',
+              description: 'Nebo nahrajte video soubor',
+            },
+          ],
+        },
+      ],
+      description: 'Videa nemovitosti (bez zvuku)',
+    }),
+    defineField({
       name: 'description',
       title: 'Popis',
       type: 'text',

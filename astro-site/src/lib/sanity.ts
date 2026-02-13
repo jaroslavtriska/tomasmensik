@@ -49,6 +49,10 @@ export interface SanityProperty {
   disposition?: string;
   mainImage: SanityImageSource;
   images?: SanityImageSource[];
+  videos?: Array<{
+    url?: string;
+    file?: { asset: { _ref: string } };
+  }>;
   description?: string;
   parameters?: { label: string; value: string }[];
   featured?: boolean;
@@ -58,10 +62,18 @@ export interface SanityProperty {
 export interface SanityService {
   _id: string;
   title: string;
+  slug?: { current: string };
   description: string;
+  detailedDescription?: string;
   icon: 'home' | 'key' | 'chart' | 'chat' | 'search' | 'document';
   features?: string[];
   order?: number;
+  gallery?: Array<{
+    type: 'image' | 'video';
+    image?: SanityImageSource;
+    videoUrl?: string;
+    videoFile?: { asset: { _ref: string } };
+  }>;
 }
 
 export interface SanityTestimonial {
@@ -156,6 +168,7 @@ export const queries = {
   
   // Services
   allServices: `*[_type == "service"] | order(order asc)`,
+  serviceBySlug: `*[_type == "service" && slug.current == $slug][0]`,
   
   // Testimonials
   allTestimonials: `*[_type == "testimonial"] | order(order asc)`,

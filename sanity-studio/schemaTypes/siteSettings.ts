@@ -55,7 +55,6 @@ export default defineType({
       options: {
         list: [
           { title: 'Zelené (výchozí)', value: 'green' },
-          { title: 'Modré', value: 'blue' },
           { title: 'Zlaté', value: 'amber' },
           { title: 'Tmavé', value: 'dark' },
         ],
