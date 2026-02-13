@@ -181,10 +181,15 @@ export interface SanitySiteSettings {
   copyrightText?: string;
   footerQuickLinks?: SanityFooterLink[];
   navLinks?: SanityNavLink[];
-  careerTitle?: string;
-  careerSubtitle?: string;
   cooperationTitle?: string;
   cooperationSubtitle?: string;
+}
+
+export interface SanityPageCareer {
+  _id: string;
+  careerTitle?: string;
+  careerSubtitle?: string;
+  careerPhoto?: SanityImageSource;
 }
 
 // GROQ Queries
@@ -225,6 +230,9 @@ export const queries = {
   
   // Site Settings
   siteSettings: `*[_type == "siteSettings"][0]`,
+  
+  // Page Career (Kariéra)
+  pageCareer: `*[_type == "pageCareer"][0]`,
 };
 
 // Helper function to format price in Czech format

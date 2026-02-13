@@ -1,34 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { client, queries } from '../lib/sanity';
-import type { SanitySiteSettings, SanityAbout } from '../lib/sanity';
+import { client, queries, urlFor } from '../lib/sanity';
+import type { SanityPageCareer, SanityAbout } from '../lib/sanity';
 
 // Web3Forms configuration (free, unlimited submissions)
 // Get your access key from https://web3forms.com (no registration needed, just enter your email)
 const WEB3FORMS_ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY;
 const formAction = WEB3FORMS_ACCESS_KEY ? 'https://api.web3forms.com/submit' : '#';
 
-let siteSettings: SanitySiteSettings | null = null;
+let pageCareer: SanityPageCareer | null = null;
 let about: SanityAbout | null = null;
 try {
-  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+  pageCareer = await client.fetch<SanityPageCareer>(queries.pageCareer);
   about = await client.fetch<SanityAbout>(queries.about);
 } catch (error) {
   console.error('Chyba při načítání dat pro stránku kariéra:', error);
 }
 
-const title = siteSettings?.careerTitle || 'Kariéra';
+const title = pageCareer?.careerTitle || 'Kariéra';
 const subtitle =
-  siteSettings?.careerSubtitle ||
+  pageCareer?.careerSubtitle ||
   'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.';
 
-// Get Tomáš's photo
+// Photo: career page photo first, fallback to about mainPhoto
 const getImageUrl = (ref: string) => {
   if (!ref) return null;
   return `https://cdn.sanity.io/images/2mnybhg0/production/${ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
 };
-
-const tomasPhoto = about?.mainPhoto?.asset?._ref ? getImageUrl(about.mainPhoto.asset._ref) : 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=800&fit=crop';
+const careerPhotoUrl = pageCareer?.careerPhoto ? urlFor(pageCareer.careerPhoto).width(600).height(800).fit('max').auto('format').url() : null;
+const aboutPhotoUrl = about?.mainPhoto?.asset?._ref ? getImageUrl(about.mainPhoto.asset._ref) : null;
+const tomasPhoto = careerPhotoUrl || aboutPhotoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=800&fit=crop';
 const tomasName = about?.name || 'Tomáš Menšík';
 ---
 

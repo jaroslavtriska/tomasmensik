@@ -7,10 +7,11 @@ try {
   siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
 } catch (_) {}
 
+const instagramHandle = (siteSettings?.instagram || 'tomasmensik').replace(/^@/, '');
 const contactInfo = {
   phone: siteSettings?.phone || '+420 123 456 789',
   email: siteSettings?.email || 'tomas@mensik-reality.cz',
-  instagram: siteSettings?.instagram || 'https://instagram.com/tomasmensik',
+  instagram: `https://instagram.com/${instagramHandle}`,
   address: siteSettings?.address || 'Jihlava, Česká republika',
 };
 

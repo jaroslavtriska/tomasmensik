@@ -4,6 +4,7 @@ import testimonial from './testimonial'
 import about from './about'
 import siteSettings from './siteSettings'
 import partner from './partner'
+import pageCareer from './pageCareer'
 
 export const schemaTypes = [
   property,
@@ -12,4 +13,5 @@ export const schemaTypes = [
   about,
   partner,
   siteSettings,
+  pageCareer,
 ]

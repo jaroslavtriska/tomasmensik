@@ -7,7 +7,6 @@ export default defineType({
   groups: [
     { name: 'general', title: 'Obecné & Branding', default: true },
     { name: 'home', title: 'Úvodní stránka' },
-    { name: 'career', title: 'Kariéra' },
     { name: 'cooperation', title: 'Spolupráce' },
     { name: 'contact', title: 'Kontakt' },
     { name: 'footer', title: 'Patička' },
@@ -169,23 +168,6 @@ export default defineType({
       group: 'home',
       initialValue: 'Domluvit schůzku',
     }),
-    // Kariéra
-    defineField({
-      name: 'careerTitle',
-      title: 'Nadpis',
-      type: 'string',
-      group: 'career',
-      initialValue: 'Kariéra',
-      description: 'Stránka /kariera. Na webu se zobrazí „Kariéra“, pokud pole nevyplníte.',
-    }),
-    defineField({
-      name: 'careerSubtitle',
-      title: 'Podnadpis',
-      type: 'text',
-      group: 'career',
-      rows: 2,
-      initialValue: 'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.',
-    }),
     // Spolupráce
     defineField({
       name: 'cooperationTitle',
@@ -222,9 +204,11 @@ export default defineType({
     }),
     defineField({
       name: 'instagram',
-      title: 'Instagram URL',
-      type: 'url',
+      title: 'Instagram (handle)',
+      type: 'string',
       group: 'contact',
+      initialValue: 'tomasmensik',
+      description: 'Zadejte handle bez @ (např. tomasmensik). Odkaz se na webu vytvoří automaticky.',
     }),
     defineField({
       name: 'facebook',

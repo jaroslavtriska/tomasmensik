@@ -3,7 +3,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
-const singletonTypes = new Set(['siteSettings'])
+const singletonTypes = new Set(['siteSettings', 'pageCareer'])
 
 const deskStructure = (S: any) =>
   S.list()
@@ -13,6 +13,14 @@ const deskStructure = (S: any) =>
         .title('Nastavení webu')
         .id('siteSettings')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+      S.listItem()
+        .title('Kontakt')
+        .id('contact')
+        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+      S.listItem()
+        .title('Kariéra')
+        .id('pageCareer')
+        .child(S.document().schemaType('pageCareer').documentId('pageCareer')),
       S.divider(),
       S.documentTypeListItem('about').title('O mně'),
       S.documentTypeListItem('service').title('Služby'),

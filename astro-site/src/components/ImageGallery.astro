@@ -69,8 +69,9 @@ if (videos && videos.length > 0) {
     <div class="grid grid-cols-5 gap-2">
       {galleryItems.map((item, index) => (
         <button 
+          type="button"
           class:list={[
-            'thumbnail aspect-square overflow-hidden border-2 transition-all relative',
+            'thumbnail aspect-square overflow-hidden border-2 transition-all relative cursor-pointer',
             index === 0 ? 'border-accent-700' : 'border-transparent hover:border-accent-300'
           ]}
           data-type={item.type}
@@ -165,7 +166,16 @@ if (videos && videos.length > 0) {
   
   let currentIndex = 0;
 
-  // Thumbnail click handler
+  function openLightbox() {
+    if (lightbox && lightboxContent) {
+      updateLightbox();
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Thumbnail click handler – update main media and open lightbox (preview)
   thumbnails.forEach((thumb, index) => {
     thumb.addEventListener('click', () => {
       const type = thumb.getAttribute('data-type');
@@ -181,6 +191,7 @@ if (videos && videos.length > 0) {
       thumb.classList.add('border-accent-700');
       
       currentIndex = index;
+      openLightbox();
     });
   });
 
@@ -222,15 +233,8 @@ if (videos && videos.length > 0) {
     }
   }
 
-  // Open lightbox
-  mainContainer?.addEventListener('click', () => {
-    if (lightbox && lightboxContent) {
-      updateLightbox();
-      lightbox.classList.remove('hidden');
-      lightbox.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-    }
-  });
+  // Open lightbox when clicking main image
+  mainContainer?.addEventListener('click', openLightbox);
 
   // Close lightbox
   lightboxClose?.addEventListener('click', closeLightbox);

@@ -23,7 +23,7 @@ async function seed() {
     siteDescription: 'Profesionální realitní služby v Jihlavě a okolí. Prodej, nákup a pronájem nemovitostí.',
     phone: '+420 123 456 789',
     email: 'tomas@mensik-reality.cz',
-    instagram: 'https://instagram.com/tomasmensik',
+    instagram: 'tomasmensik',
     address: 'Masarykovo náměstí 10, 586 01 Jihlava',
     openingHours: [
       { _key: 'weekdays', days: 'Pondělí – Pátek', hours: '9:00 – 18:00' },
@@ -44,13 +44,20 @@ async function seed() {
     footerBrandName: 'Tomáš Menšík',
     footerTagline: 'Profesionální realitní služby v Jihlavě a okolí. Pomohu vám s prodejem, nákupem i oceněním nemovitostí.',
     copyrightText: '© 2024 Tomáš Menšík. Všechna práva vyhrazena.',
-    careerTitle: 'Kariéra',
-    careerSubtitle: 'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.',
     cooperationTitle: 'Spolupráce',
     cooperationSubtitle: 'Firmy a specialisté, se kterými dlouhodobě spolupracujeme.',
   })
 
-  // 2. About
+  // 2. Page Career (Kariéra – singleton)
+  console.log('💼 Creating career page...')
+  await client.createOrReplace({
+    _id: 'pageCareer',
+    _type: 'pageCareer',
+    careerTitle: 'Kariéra',
+    careerSubtitle: 'Chcete s Tomášem spolupracovat? Napište pár vět o sobě a ozveme se vám.',
+  })
+
+  // 3. About
   console.log('👤 Creating about page...')
   await client.createOrReplace({
     _id: 'about',
@@ -70,7 +77,7 @@ Ve volném čase se věnuji sportu, zejména cyklistice a běhu. Rád poznávám
     ],
   })
 
-  // 3. Services
+  // 4. Services
   console.log('🛠️ Creating services...')
   const services = [
     {
@@ -167,7 +174,7 @@ Ve volném čase se věnuji sportu, zejména cyklistice a běhu. Rád poznávám
     })
   }
 
-  // 4. Properties for sale
+  // 5. Properties for sale
   console.log('🏠 Creating properties for sale...')
   const propertiesForSale = [
     {
@@ -312,7 +319,7 @@ Výborná lokalita s veškerou občanskou vybaveností v docházkové vzdálenos
     })
   }
 
-  // 5. Sold properties
+  // 6. Sold properties
   console.log('✅ Creating sold properties...')
   const soldProperties = [
     {
@@ -398,7 +405,7 @@ Výborná lokalita s veškerou občanskou vybaveností v docházkové vzdálenos
     })
   }
 
-  // 6. Testimonials
+  // 7. Testimonials
   console.log('💬 Creating testimonials...')
   const testimonials = [
     {
