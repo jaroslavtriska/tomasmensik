@@ -99,10 +99,11 @@ The repo has a root `vercel.json` so Vercel builds the Astro app from the `astro
    - Import your Git repository
    - Leave **Root Directory** as the repo root (the root `vercel.json` handles the monorepo)
 
-3. **Environment variables** (optional if you use the defaults in code)
+3. **Environment variables** (required for forms; Sanity can use defaults in code)
    - **Settings → Environment Variables** in the Vercel project:
    - `PUBLIC_SANITY_PROJECT_ID` = your Sanity project ID (e.g. `2mnybhg0`)
    - `PUBLIC_SANITY_DATASET` = `production` (or your dataset name)
+   - `PUBLIC_WEB3FORMS_ACCESS_KEY` = your Web3Forms access key (get it at [web3forms.com](https://web3forms.com) – enter your email, no registration)
 
 4. **Sanity CORS** (required for the embedded Studio at `/admin`)
    - In [sanity.io/manage](https://sanity.io/manage) → your project → **API** → **CORS origins**

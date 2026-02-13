@@ -18,21 +18,24 @@ if (videos && videos.length > 0) {
 }
 ---
 
-<div class="image-gallery">
+<div class="image-gallery js-gallery" data-gallery-items={JSON.stringify(galleryItems)} data-gallery-title={title}>
   <!-- Main Media -->
   <div 
-    class="aspect-[4/3] overflow-hidden cursor-pointer mb-4"
+    class="aspect-[4/3] overflow-hidden cursor-pointer mb-4 rounded-lg focus-within:ring-2 focus-within:ring-accent-500 focus-within:ring-offset-2"
     id="main-media-container"
+    role="button"
+    tabindex="0"
+    aria-label="Klikněte pro zobrazení náhledu"
   >
     {galleryItems[0]?.type === 'image' ? (
       <img 
         id="main-media"
         src={galleryItems[0].url} 
         alt={title}
-        class="w-full h-full object-cover transition-opacity duration-300"
+        class="w-full h-full object-cover transition-opacity duration-300 cursor-pointer"
       />
     ) : galleryItems[0]?.type === 'video' ? (
-      <div id="main-media-video" class="w-full h-full">
+      <div id="main-media-video" class="w-full h-full cursor-pointer">
         {galleryItems[0].url.includes('youtube.com') || galleryItems[0].url.includes('youtu.be') ? (
           <iframe
             src={galleryItems[0].url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
@@ -98,240 +101,254 @@ if (videos && videos.length > 0) {
       ))}
     </div>
   )}
+
+  <!-- Lightbox (uvnitř .js-gallery kvůli event delegation) -->
+  <div 
+    id="lightbox" 
+    class="fixed inset-0 z-50 bg-black/95 hidden items-center justify-center overflow-hidden h-dvh max-h-[100dvh]"
+  >
+    <button 
+      id="lightbox-close"
+      type="button"
+      class="absolute top-4 right-4 text-white/80 hover:text-white p-2"
+      aria-label="Zavřít"
+    >
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <button 
+      id="lightbox-prev"
+      type="button"
+      class="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
+      aria-label="Předchozí"
+    >
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <button 
+      id="lightbox-next"
+      type="button"
+      class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
+      aria-label="Další"
+    >
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <div id="lightbox-content" class="max-w-[90vw] max-h-[90dvh] flex items-center justify-center overflow-hidden min-h-0">
+      <img 
+        id="lightbox-image"
+        src="" 
+        alt=""
+        class="max-w-full max-h-[90dvh] w-auto object-contain hidden"
+      />
+      <div id="lightbox-video" class="hidden max-w-[90vw] max-h-[90dvh] w-full flex items-center justify-center min-h-0"></div>
+    </div>
+
+    <div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+      1 / {galleryItems.length}
+    </div>
+  </div>
 </div>
 
-<!-- Lightbox -->
-<div 
-  id="lightbox" 
-  class="fixed inset-0 z-50 bg-black/95 hidden items-center justify-center"
->
-  <button 
-    id="lightbox-close"
-    class="absolute top-4 right-4 text-white/80 hover:text-white p-2"
-    aria-label="Zavřít"
-  >
-    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
+<script>
+  (function() {
+    function getGalleryState(el) {
+      const gallery = el.closest('.js-gallery');
+      if (!gallery) return null;
+      const raw = gallery.getAttribute('data-gallery-items');
+      const galleryTitle = gallery.getAttribute('data-gallery-title') || '';
+      let items = [];
+      try { items = raw ? JSON.parse(raw) : []; } catch (_) {}
+      const lightbox = gallery.querySelector('#lightbox');
+      return { gallery, items, galleryTitle, lightbox };
+    }
 
-  <button 
-    id="lightbox-prev"
-    class="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
-    aria-label="Předchozí"
-  >
-    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-    </svg>
-  </button>
+    function openLightbox(state, index) {
+      if (!state || !state.lightbox || !state.items[index]) return;
+      const lightbox = state.lightbox;
+      const lightboxImage = lightbox.querySelector('#lightbox-image');
+      const lightboxVideo = lightbox.querySelector('#lightbox-video');
+      const lightboxContent = lightbox.querySelector('#lightbox-content');
+      const lightboxCounter = lightbox.querySelector('#lightbox-counter');
+      const item = state.items[index];
 
-  <button 
-    id="lightbox-next"
-    class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
-    aria-label="Další"
-  >
-    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-    </svg>
-  </button>
-
-  <div id="lightbox-content" class="max-w-[90vw] max-h-[90vh]">
-    <img 
-      id="lightbox-image"
-      src="" 
-      alt=""
-      class="max-w-full max-h-full object-contain hidden"
-    />
-    <div id="lightbox-video" class="hidden w-full h-full"></div>
-  </div>
-
-  <div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
-    1 / {galleryItems.length}
-  </div>
-</div>
-
-<script define:vars={{ galleryItems, title }}>
-  const mainMedia = document.getElementById('main-media');
-  const mainMediaVideo = document.getElementById('main-media-video');
-  const mainContainer = document.getElementById('main-media-container');
-  const thumbnails = document.querySelectorAll('.thumbnail');
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = document.getElementById('lightbox-image');
-  const lightboxVideo = document.getElementById('lightbox-video');
-  const lightboxContent = document.getElementById('lightbox-content');
-  const lightboxClose = document.getElementById('lightbox-close');
-  const lightboxPrev = document.getElementById('lightbox-prev');
-  const lightboxNext = document.getElementById('lightbox-next');
-  const lightboxCounter = document.getElementById('lightbox-counter');
-  
-  let currentIndex = 0;
-
-  function openLightbox() {
-    if (lightbox && lightboxContent) {
-      updateLightbox();
+      if (item.type === 'image') {
+        if (lightboxImage) {
+          lightboxImage.src = item.url;
+          lightboxImage.alt = state.galleryTitle + ' - ' + (index + 1);
+          lightboxImage.classList.remove('hidden');
+        }
+        if (lightboxVideo) {
+          lightboxVideo.innerHTML = '';
+          lightboxVideo.classList.add('hidden');
+        }
+      } else {
+        if (lightboxImage) lightboxImage.classList.add('hidden');
+        if (lightboxVideo) {
+          lightboxVideo.classList.remove('hidden');
+          var videoHtml = '';
+          if (item.url.indexOf('youtube.com') !== -1 || item.url.indexOf('youtu.be') !== -1) {
+            var embedUrl = item.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+            videoHtml = '<div class="aspect-video max-h-full max-w-full w-full relative"><iframe src="' + embedUrl + '" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen muted></iframe></div>';
+          } else if (item.url.indexOf('vimeo.com') !== -1) {
+            var embedUrl = item.url.replace('vimeo.com/', 'player.vimeo.com/video/');
+            videoHtml = '<div class="aspect-video max-h-full max-w-full w-full relative"><iframe src="' + embedUrl + '" class="absolute inset-0 w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen muted></iframe></div>';
+          } else {
+            videoHtml = '<video src="' + item.url + '" class="max-h-full max-w-full object-contain" controls muted playsinline></video>';
+          }
+          lightboxVideo.innerHTML = videoHtml;
+        }
+      }
+      if (lightboxCounter) lightboxCounter.textContent = (index + 1) + ' / ' + state.items.length;
+      lightbox.dataset.currentIndex = String(index);
       lightbox.classList.remove('hidden');
       lightbox.classList.add('flex');
       document.body.style.overflow = 'hidden';
     }
-  }
 
-  // Thumbnail click handler – update main media and open lightbox (preview)
-  thumbnails.forEach((thumb, index) => {
-    thumb.addEventListener('click', () => {
-      const type = thumb.getAttribute('data-type');
-      const url = thumb.getAttribute('data-url');
-      if (!url) return;
-      
-      setMainMedia(type, url);
-      
-      // Update thumbnail borders
-      thumbnails.forEach(t => t.classList.remove('border-accent-700'));
-      thumbnails.forEach(t => t.classList.add('border-transparent'));
-      thumb.classList.remove('border-transparent');
-      thumb.classList.add('border-accent-700');
-      
-      currentIndex = index;
-      openLightbox();
-    });
-  });
+    function closeLightbox(lightbox) {
+      if (lightbox) {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+    }
 
-  function setMainMedia(type: string | null, url: string) {
-    if (!mainContainer) return;
-    
-    if (type === 'image') {
-      if (mainMedia) {
+    function setMainMedia(gallery, type, url) {
+      const mainContainer = gallery.querySelector('#main-media-container');
+      const mainMedia = gallery.querySelector('#main-media');
+      const mainMediaVideo = gallery.querySelector('#main-media-video');
+      if (!mainContainer) return;
+      if (type === 'image' && mainMedia) {
         mainMedia.style.opacity = '0';
-        setTimeout(() => {
-          if (mainMedia) {
-            mainMedia.src = url;
-            mainMedia.style.opacity = '1';
-          }
+        setTimeout(function() {
+          mainMedia.src = url;
+          mainMedia.style.opacity = '1';
         }, 150);
-      }
-      if (mainMediaVideo) {
-        mainMediaVideo.innerHTML = '';
-        mainMediaVideo.style.display = 'none';
-      }
-    } else if (type === 'video') {
-      if (mainMedia) {
-        mainMedia.style.display = 'none';
-      }
-      if (mainMediaVideo) {
+        if (mainMediaVideo) { mainMediaVideo.innerHTML = ''; mainMediaVideo.style.display = 'none'; }
+      } else if (type === 'video' && mainMediaVideo) {
+        if (mainMedia) mainMedia.style.display = 'none';
         mainMediaVideo.style.display = 'block';
-        let videoHtml = '';
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-          const embedUrl = url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
-          videoHtml = `<iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen muted></iframe>`;
-        } else if (url.includes('vimeo.com')) {
-          const embedUrl = url.replace('vimeo.com/', 'player.vimeo.com/video/');
-          videoHtml = `<iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen muted></iframe>`;
+        var videoHtml = '';
+        if (url.indexOf('youtube.com') !== -1 || url.indexOf('youtu.be') !== -1) {
+          var embedUrl = url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+          videoHtml = '<div class="aspect-video max-h-full max-w-full w-full relative"><iframe src="' + embedUrl + '" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen muted></iframe></div>';
+        } else if (url.indexOf('vimeo.com') !== -1) {
+          var embedUrl = url.replace('vimeo.com/', 'player.vimeo.com/video/');
+          videoHtml = '<div class="aspect-video max-h-full max-w-full w-full relative"><iframe src="' + embedUrl + '" class="absolute inset-0 w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen muted></iframe></div>';
         } else {
-          videoHtml = `<video src="${url}" class="w-full h-full object-cover" controls muted playsinline></video>`;
+          videoHtml = '<video src="' + url + '" class="max-h-full max-w-full object-contain" controls muted playsinline></video>';
         }
         mainMediaVideo.innerHTML = videoHtml;
       }
     }
-  }
 
-  // Open lightbox when clicking main image
-  mainContainer?.addEventListener('click', openLightbox);
+    document.addEventListener('click', function(e) {
+      const thumb = e.target.closest('.thumbnail');
+      const mainContainer = e.target.closest('#main-media-container');
+      const mainImg = e.target.closest('#main-media');
+      const mainVideo = e.target.closest('#main-media-video');
 
-  // Close lightbox
-  lightboxClose?.addEventListener('click', closeLightbox);
-  lightbox?.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
+      if (thumb) {
+        e.preventDefault();
+        const state = getGalleryState(thumb);
+        if (!state || !state.items.length) return;
+        const index = parseInt(thumb.getAttribute('data-index'), 10);
+        if (isNaN(index)) return;
+        const type = thumb.getAttribute('data-type');
+        const url = thumb.getAttribute('data-url');
+        if (type && url) setMainMedia(state.gallery, type, url);
+        state.gallery.querySelectorAll('.thumbnail').forEach(function(t, i) {
+          t.classList.toggle('border-accent-700', i === index);
+          t.classList.toggle('border-transparent', i !== index);
+        });
+        openLightbox(state, index);
+        return;
+      }
 
-  function closeLightbox() {
-    if (lightbox) {
-      lightbox.classList.add('hidden');
-      lightbox.classList.remove('flex');
-      document.body.style.overflow = '';
-    }
-  }
+      if (mainContainer || mainImg || mainVideo) {
+        e.preventDefault();
+        const state = getGalleryState(mainContainer || mainImg || mainVideo);
+        if (!state || !state.items.length) return;
+        let index = 0;
+        const mainMedia = state.gallery.querySelector('#main-media');
+        const mainUrl = mainMedia ? mainMedia.getAttribute('src') : null;
+        if (mainUrl) {
+          const idx = state.items.findIndex(function(item) { return item.url === mainUrl; });
+          if (idx >= 0) index = idx;
+        }
+        openLightbox(state, index);
+      }
+    });
 
-  // Navigation
-  lightboxPrev?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
-    updateLightbox();
-    updateMainMedia();
-  });
-
-  lightboxNext?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    currentIndex = (currentIndex + 1) % galleryItems.length;
-    updateLightbox();
-    updateMainMedia();
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox?.classList.contains('hidden')) {
-      if (e.key === 'Escape') closeLightbox();
+    document.addEventListener('keydown', function(e) {
+      const lightbox = document.querySelector('#lightbox:not(.hidden)');
+      if (!lightbox) return;
+      const gallery = lightbox.closest('.js-gallery');
+      const state = gallery ? getGalleryState(lightbox) : null;
+      if (e.key === 'Escape') {
+        closeLightbox(lightbox);
+        return;
+      }
+      if (!state || !state.items.length) return;
+      let currentIndex = parseInt(lightbox.dataset.currentIndex, 10) || 0;
       if (e.key === 'ArrowLeft') {
-        currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
-        updateLightbox();
-        updateMainMedia();
+        currentIndex = (currentIndex - 1 + state.items.length) % state.items.length;
+        openLightbox(state, currentIndex);
+        const item = state.items[currentIndex];
+        if (item) setMainMedia(state.gallery, item.type, item.url);
+        state.gallery.querySelectorAll('.thumbnail').forEach(function(t, i) {
+          t.classList.toggle('border-accent-700', i === currentIndex);
+          t.classList.toggle('border-transparent', i !== currentIndex);
+        });
       }
       if (e.key === 'ArrowRight') {
-        currentIndex = (currentIndex + 1) % galleryItems.length;
-        updateLightbox();
-        updateMainMedia();
+        currentIndex = (currentIndex + 1) % state.items.length;
+        openLightbox(state, currentIndex);
+        const item = state.items[currentIndex];
+        if (item) setMainMedia(state.gallery, item.type, item.url);
+        state.gallery.querySelectorAll('.thumbnail').forEach(function(t, i) {
+          t.classList.toggle('border-accent-700', i === currentIndex);
+          t.classList.toggle('border-transparent', i !== currentIndex);
+        });
       }
-    }
-  });
-
-  function updateLightbox() {
-    if (!lightboxContent || !galleryItems[currentIndex]) return;
-    
-    const item = galleryItems[currentIndex];
-    if (item.type === 'image') {
-      if (lightboxImage) {
-        lightboxImage.src = item.url;
-        lightboxImage.alt = `${title} - ${currentIndex + 1}`;
-        lightboxImage.classList.remove('hidden');
-      }
-      if (lightboxVideo) {
-        lightboxVideo.innerHTML = '';
-        lightboxVideo.classList.add('hidden');
-      }
-    } else if (item.type === 'video') {
-      if (lightboxImage) {
-        lightboxImage.classList.add('hidden');
-      }
-      if (lightboxVideo) {
-        lightboxVideo.classList.remove('hidden');
-        let videoHtml = '';
-        if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
-          const embedUrl = item.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
-          videoHtml = `<iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen muted></iframe>`;
-        } else if (item.url.includes('vimeo.com')) {
-          const embedUrl = item.url.replace('vimeo.com/', 'player.vimeo.com/video/');
-          videoHtml = `<iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen muted></iframe>`;
-        } else {
-          videoHtml = `<video src="${item.url}" class="w-full h-full object-contain" controls muted playsinline></video>`;
-        }
-        lightboxVideo.innerHTML = videoHtml;
-      }
-    }
-    updateCounter();
-  }
-
-  function updateMainMedia() {
-    if (!galleryItems[currentIndex]) return;
-    const item = galleryItems[currentIndex];
-    setMainMedia(item.type, item.url);
-    
-    thumbnails.forEach((t, i) => {
-      t.classList.toggle('border-accent-700', i === currentIndex);
-      t.classList.toggle('border-transparent', i !== currentIndex);
     });
-  }
 
-  function updateCounter() {
-    if (lightboxCounter) {
-      lightboxCounter.textContent = `${currentIndex + 1} / ${galleryItems.length}`;
-    }
-  }
+    document.addEventListener('click', function(e) {
+      const lightbox = e.target.closest('#lightbox');
+      if (!lightbox || e.target !== lightbox) return;
+      closeLightbox(lightbox);
+    });
+
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('#lightbox-close, #lightbox-prev, #lightbox-next');
+      if (!btn) return;
+      e.stopPropagation();
+      const lightbox = btn.closest('#lightbox');
+      if (!lightbox) return;
+      if (btn.id === 'lightbox-close') {
+        closeLightbox(lightbox);
+        return;
+      }
+      const gallery = lightbox.closest('.js-gallery');
+      const state = gallery ? getGalleryState(lightbox) : null;
+      if (!state || !state.items.length) return;
+      let currentIndex = parseInt(lightbox.dataset.currentIndex, 10) || 0;
+      if (btn.id === 'lightbox-prev') currentIndex = (currentIndex - 1 + state.items.length) % state.items.length;
+      if (btn.id === 'lightbox-next') currentIndex = (currentIndex + 1) % state.items.length;
+      openLightbox(state, currentIndex);
+      const item = state.items[currentIndex];
+      if (item) setMainMedia(state.gallery, item.type, item.url);
+      state.gallery.querySelectorAll('.thumbnail').forEach(function(t, i) {
+        t.classList.toggle('border-accent-700', i === currentIndex);
+        t.classList.toggle('border-transparent', i !== currentIndex);
+      });
+    });
+  })();
 </script>
