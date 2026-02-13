@@ -154,8 +154,6 @@ export interface SanitySiteSettings {
   siteDescription?: string;
   logoImage?: SanityImageSource;
   logoAlt?: string;
-  colorTheme?: 'green' | 'blue' | 'amber' | 'dark';
-  fontVariant?: 'classic' | 'elegant' | 'modern';
   phone?: string;
   email?: string;
   instagram?: string;
@@ -175,9 +173,6 @@ export interface SanitySiteSettings {
   servicesSectionTitle?: string;
   servicesSectionDescription?: string;
   servicesCtaLabel?: string;
-  propertiesSectionTitle?: string;
-  propertiesSectionDescription?: string;
-  propertiesCtaLabel?: string;
   ctaTitle?: string;
   ctaDescription?: string;
   ctaButtonLabel?: string;

@@ -14,9 +14,11 @@ const deskStructure = (S: any) =>
         .id('siteSettings')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
       S.divider(),
-      ...S.documentTypeListItems().filter(
-        (item: any) => !singletonTypes.has(item.getId())
-      ),
+      S.documentTypeListItem('about').title('O mně'),
+      S.documentTypeListItem('service').title('Služby'),
+      S.documentTypeListItem('property').title('Nemovitosti'),
+      S.documentTypeListItem('testimonial').title('Reference'),
+      S.documentTypeListItem('partner').title('Partneři'),
     ])
 
 // Use project "TomasMensik" under org "Jaroslav Triska". Set in Vercel or .env:

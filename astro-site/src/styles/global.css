@@ -51,9 +51,13 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-/* Font variants controlled from CMS (siteSettings.fontVariant) */
+/* Výchozí téma a písmo (pevné, bez volby v administraci) */
+body.theme-green {
+  /* Používá barvy z @theme výše */
+}
+
 body.font-classic {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-body);
 }
 
 body.font-classic h1,
@@ -62,83 +66,7 @@ body.font-classic h3,
 body.font-classic h4,
 body.font-classic h5,
 body.font-classic h6 {
-  font-family: 'Poppins', sans-serif;
-}
-
-body.font-elegant {
-  font-family: 'Poppins', sans-serif;
-}
-
-body.font-elegant h1,
-body.font-elegant h2,
-body.font-elegant h3,
-body.font-elegant h4,
-body.font-elegant h5,
-body.font-elegant h6 {
-  font-family: 'Poppins', sans-serif;
-}
-
-body.font-modern {
-  font-family: 'Poppins', sans-serif;
-}
-
-body.font-modern h1,
-body.font-modern h2,
-body.font-modern h3,
-body.font-modern h4,
-body.font-modern h5,
-body.font-modern h6 {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Color themes controlled from CMS (siteSettings.colorTheme) */
-/* Default (green) uses base variables; variants override accent + background tones */
-
-body.theme-blue {
-  --color-accent-50: #eff6ff;
-  --color-accent-100: #dbeafe;
-  --color-accent-200: #bfdbfe;
-  --color-accent-300: #93c5fd;
-  --color-accent-400: #60a5fa;
-  --color-accent-500: #3b82f6;
-  --color-accent-600: #2563eb;
-  --color-accent-700: #1d4ed8;
-  --color-accent-800: #1e40af;
-  --color-accent-900: #1e3a8a;
-  --color-accent-950: #0b1120;
-}
-
-body.theme-amber {
-  --color-accent-50: #fffbeb;
-  --color-accent-100: #fef3c7;
-  --color-accent-200: #fde68a;
-  --color-accent-300: #fcd34d;
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
-  --color-accent-600: #d97706;
-  --color-accent-700: #b45309;
-  --color-accent-800: #92400e;
-  --color-accent-900: #78350f;
-  --color-accent-950: #451a03;
-}
-
-body.theme-dark {
-  --color-sand-50: #0b1120;
-  --color-sand-100: #111827;
-  --color-sand-200: #1f2937;
-  --color-sand-300: #4b5563;
-  --color-sand-400: #9ca3af;
-  --color-sand-500: #d1d5db;
-  --color-sand-600: #e5e7eb;
-  --color-sand-700: #f3f4f6;
-  --color-sand-800: #f9fafb;
-  --color-sand-900: #f9fafb;
-  --color-sand-950: #020617;
-
-  --color-accent-500: #fbbf24;
-  --color-accent-600: #f59e0b;
-  --color-accent-700: #d97706;
-  --color-accent-800: #b45309;
+  font-family: var(--font-heading);
 }
 
 /* Custom utilities */
