@@ -7,7 +7,11 @@ try {
   siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
 } catch (_) {}
 
-const instagramHandle = (siteSettings?.instagram || 'tomasmensik').replace(/^@/, '');
+// Normalize Instagram: accept full URL or handle (with/without @)
+const rawInstagram = (siteSettings?.instagram ?? '').trim();
+const instagramHandle = rawInstagram
+  ? rawInstagram.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '').split('/')[0].trim() || 'tomasmensik'
+  : 'tomasmensik';
 const contactInfo = {
   phone: siteSettings?.phone || '+420 123 456 789',
   email: siteSettings?.email || 'tomas@mensik-reality.cz',

@@ -14,10 +14,6 @@ const deskStructure = (S: any) =>
         .id('siteSettings')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
       S.listItem()
-        .title('Kontakt')
-        .id('contact')
-        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
-      S.listItem()
         .title('Kariéra')
         .id('pageCareer')
         .child(S.document().schemaType('pageCareer').documentId('pageCareer')),

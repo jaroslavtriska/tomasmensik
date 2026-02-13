@@ -16,8 +16,11 @@ try {
   console.error('Error fetching site settings:', error);
 }
 
-// Contact info from Sanity with fallbacks (Instagram: handle → URL)
-const instagramHandle = (siteSettings?.instagram || 'tomasmensik').replace(/^@/, '');
+// Contact info from Sanity with fallbacks (Instagram: handle or URL → normalize to URL)
+const rawInstagram = (siteSettings?.instagram ?? '').trim();
+const instagramHandle = rawInstagram
+  ? rawInstagram.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '').split('/')[0].trim() || 'tomasmensik'
+  : 'tomasmensik';
 const contactInfo = {
   phone: siteSettings?.phone || '+420 123 456 789',
   email: siteSettings?.email || 'tomas@mensik-reality.cz',
