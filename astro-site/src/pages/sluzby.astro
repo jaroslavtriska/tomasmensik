@@ -77,9 +77,8 @@ const getIcon = (icon: string) => {
     <div class="container-narrow">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         {services.length > 0 ? services.map((service, index) => (
-          <a
-            href={service.slug?.current ? `/sluzby/${service.slug.current}` : '#'}
-            class="block p-8 bg-white border border-sand-200 hover:border-accent-300 hover:shadow-lg transition-all duration-300"
+          <div
+            class="flex flex-col p-8 bg-white border border-sand-200 hover:border-accent-300 hover:shadow-lg transition-all duration-300"
             style={`animation-delay: ${index * 100}ms`}
           >
             <div class="w-14 h-14 rounded-full bg-accent-100 flex items-center justify-center mb-6">
@@ -97,7 +96,7 @@ const getIcon = (icon: string) => {
             </p>
             
             {service.features && service.features.length > 0 && (
-              <ul class="space-y-2">
+              <ul class="space-y-2 mb-6">
                 {service.features.map((feature: string) => (
                   <li class="flex items-start gap-3 text-sm text-sand-700">
                     <svg class="w-5 h-5 text-accent-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +107,17 @@ const getIcon = (icon: string) => {
                 ))}
               </ul>
             )}
-          </a>
+            
+            <a
+              href={service.slug?.current ? `/sluzby/${service.slug.current}` : '#'}
+              class="mt-auto inline-flex items-center gap-2 text-accent-700 font-medium hover:text-accent-800 transition-colors group"
+            >
+              Zjistit více
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
         )) : (
           <div class="col-span-2 text-center py-12">
             <p class="text-sand-500 text-lg">Služby budou brzy přidány.</p>

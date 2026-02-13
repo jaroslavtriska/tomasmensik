@@ -38,19 +38,42 @@ const services = sanityServices.slice(0, 3).map(s => ({
 
 const phone = siteSettings?.phone || '+420 123 456 789';
 const email = siteSettings?.email || 'tomas@mensik-reality.cz';
+
+// Helper to get video URL from Sanity file asset
+const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
+  if (!fileAsset?.asset?._ref) return null;
+  const ref = fileAsset.asset._ref;
+  const fileId = ref.replace('file-', '').replace(/-mp4$/, '').replace(/-webm$/, '').replace(/-mov$/, '');
+  return `https://cdn.sanity.io/files/${import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0'}/${import.meta.env.PUBLIC_SANITY_DATASET || 'production'}/${fileId}.mp4`;
+};
+
 const heroImageUrl = siteSettings?.heroImage ? urlFor(siteSettings.heroImage).width(1920).height(1080).auto('format').url() : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop';
+const heroVideoUrl = siteSettings?.heroVideo?.url || (siteSettings?.heroVideo?.file ? getVideoUrl(siteSettings.heroVideo.file) : null);
+const hasHeroVideo = !!heroVideoUrl;
 ---
 
 <Layout title="Úvod">
   <!-- Hero Section -->
   <section class="relative min-h-[90vh] flex items-center">
     <div class="absolute inset-0 z-0">
-      <img 
-        src={heroImageUrl} 
-        alt="" 
-        class="w-full h-full object-cover"
-      />
-      <div class="absolute inset-0 bg-gradient-to-r from-sand-950/90 via-sand-950/70 to-sand-950/40"></div>
+      {hasHeroVideo ? (
+        <video 
+          src={heroVideoUrl} 
+          autoplay 
+          muted 
+          loop 
+          playsinline
+          class="w-full h-full object-cover"
+        ></video>
+      ) : (
+        <img 
+          src={heroImageUrl} 
+          alt="" 
+          class="w-full h-full object-cover"
+        />
+      )}
+      <div class="absolute inset-0 bg-black/30"></div>
+      <div class="absolute inset-0 bg-black/65"></div>
     </div>
 
     <div class="container-narrow relative z-10 py-20">
@@ -63,7 +86,7 @@ const heroImageUrl = siteSettings?.heroImage ? urlFor(siteSettings.heroImage).wi
         <h1 class="font-heading text-5xl md:text-6xl lg:text-7xl text-white mb-6 animate-fade-in animate-delay-100">
           {siteSettings?.heroTitle || 'Tomáš Menšík'}
         </h1>
-        <p class="text-sand-300 text-lg md:text-xl leading-relaxed mb-8 animate-fade-in animate-delay-200">
+        <p class="text-white/80 text-lg md:text-xl leading-relaxed mb-8 animate-fade-in animate-delay-200">
           {siteSettings?.heroSubtitle || 'Pomohu vám najít vysněný domov nebo prodat vaši nemovitost za nejlepší cenu. Profesionální přístup a osobní péče v Jihlavě a okolí.'}
         </p>
         <div class="flex flex-wrap gap-4 animate-fade-in animate-delay-300">

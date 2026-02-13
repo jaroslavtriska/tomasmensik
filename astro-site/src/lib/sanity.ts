@@ -64,7 +64,27 @@ export interface SanityService {
   title: string;
   slug?: { current: string };
   description: string;
-  detailedDescription?: string;
+  detailedDescription?: Array<{
+    _type: string;
+    _key: string;
+    style?: string;
+    children?: Array<{
+      _type: string;
+      _key: string;
+      text: string;
+      marks?: Array<string | { _type: string; _key: string }>;
+    }>;
+    markDefs?: Array<{
+      _type: string;
+      _key: string;
+      href?: string;
+    }>;
+    asset?: {
+      _ref: string;
+      _type: string;
+    };
+    alt?: string;
+  }>;
   icon: 'home' | 'key' | 'chart' | 'chat' | 'search' | 'document';
   features?: string[];
   order?: number;
@@ -93,7 +113,17 @@ export interface SanityAbout {
   subtitle?: string;
   bio: string;
   mainPhoto?: SanityImageSource;
+  mainVideo?: {
+    url?: string;
+    file?: { asset: { _ref: string } };
+  };
   photos?: SanityImageSource[];
+  media?: Array<{
+    type: 'image' | 'video';
+    image?: SanityImageSource;
+    videoUrl?: string;
+    videoFile?: { asset: { _ref: string } };
+  }>;
   interests?: string[];
   stats?: { number: string; label: string }[];
 }
@@ -133,6 +163,10 @@ export interface SanitySiteSettings {
   address?: string;
   openingHours?: { days: string; hours: string }[];
   heroImage?: SanityImageSource;
+  heroVideo?: {
+    url?: string;
+    file?: { asset: { _ref: string } };
+  };
   heroTagline?: string;
   heroTitle?: string;
   heroSubtitle?: string;

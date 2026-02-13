@@ -32,9 +32,54 @@ export default defineType({
     defineField({
       name: 'detailedDescription',
       title: 'Detailní popis',
-      type: 'text',
-      rows: 10,
-      description: 'Detailní popis pro stránku služby',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            {title: 'Normální', value: 'normal'},
+            {title: 'Nadpis H2', value: 'h2'},
+            {title: 'Nadpis H3', value: 'h3'},
+          ],
+          lists: [
+            {title: 'Seznam', value: 'bullet'},
+            {title: 'Číslovaný seznam', value: 'number'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Tučné', value: 'strong'},
+              {title: 'Kurzíva', value: 'em'},
+            ],
+            annotations: [
+              {
+                title: 'URL',
+                name: 'link',
+                type: 'object',
+                fields: [
+                  {
+                    title: 'URL',
+                    name: 'href',
+                    type: 'url',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        {
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alternativní text',
+              description: 'Důležité pro přístupnost a SEO',
+            },
+          ],
+        },
+      ],
+      description: 'Detailní popis pro stránku služby - můžete přidat text i obrázky',
     }),
     defineField({
       name: 'icon',

@@ -15,7 +15,19 @@ try {
 // Build image URL helper
 const getImageUrl = (ref: string) => {
   if (!ref) return null;
-  return `https://cdn.sanity.io/images/2mnybhg0/production/${ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+  const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0';
+  const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
+  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+};
+
+// Helper to get video URL from Sanity file asset
+const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
+  if (!fileAsset?.asset?._ref) return null;
+  const ref = fileAsset.asset._ref;
+  const fileId = ref.replace('file-', '').replace(/-mp4$/, '').replace(/-webm$/, '').replace(/-mov$/, '');
+  const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0';
+  const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
+  return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.mp4`;
 };
 
 // Default values if no content in Sanity
@@ -29,13 +41,25 @@ const stats = about?.stats || [
   { number: '98%', label: 'Spokojených klientů' },
 ];
 
-// Get photos
+// Get main media (video has priority over photo)
+const mainVideoUrl = about?.mainVideo?.url || (about?.mainVideo?.file ? getVideoUrl(about.mainVideo.file) : null);
 const mainPhoto = about?.mainPhoto?.asset?._ref ? getImageUrl(about.mainPhoto.asset._ref) : 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=800&fit=crop';
-const photos = about?.photos?.map((p: any) => getImageUrl(p.asset._ref)).filter(Boolean) || [
-  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=600&h=400&fit=crop',
-];
+const hasMainVideo = !!mainVideoUrl;
+
+// Get photos and media
+const photos = about?.photos?.map((p: any) => getImageUrl(p.asset._ref)).filter(Boolean) || [];
+const mediaItems = about?.media?.map((item: any) => {
+  if (item.type === 'image' && item.image?.asset?._ref) {
+    return { type: 'image', url: getImageUrl(item.image.asset._ref) };
+  } else if (item.type === 'video') {
+    const videoUrl = item.videoUrl || (item.videoFile ? getVideoUrl(item.videoFile) : null);
+    return videoUrl ? { type: 'video', url: videoUrl } : null;
+  }
+  return null;
+}).filter(Boolean) || [];
+
+// Combine photos and media for gallery
+const galleryItems = [...photos.map((url: string) => ({ type: 'image', url })), ...mediaItems];
 ---
 
 <Layout title="O mně" description="Poznejte Tomáše Menšíka - vašeho realitního partnera v Jihlavě a okolí.">
@@ -93,27 +117,47 @@ const photos = about?.photos?.map((p: any) => getImageUrl(p.asset._ref)).filter(
           </div>
         </div>
 
-        <!-- Photos -->
+        <!-- Photos & Media -->
         <div class="space-y-6">
-          <!-- Main photo -->
+          <!-- Main media (video or photo) -->
           <div class="aspect-[3/4] overflow-hidden">
-            <img 
-              src={mainPhoto} 
-              alt={name}
-              class="w-full h-full object-cover"
-            />
+            {hasMainVideo ? (
+              <video 
+                src={mainVideoUrl} 
+                controls
+                muted
+                playsinline
+                class="w-full h-full object-cover"
+              ></video>
+            ) : (
+              <img 
+                src={mainPhoto} 
+                alt={name}
+                class="w-full h-full object-cover"
+              />
+            )}
           </div>
           
-          <!-- Photo grid -->
-          {photos.length > 0 && (
+          <!-- Media grid -->
+          {galleryItems.length > 0 && (
             <div class="grid grid-cols-3 gap-4">
-              {photos.slice(0, 3).map((photo: string, index: number) => (
+              {galleryItems.slice(0, 3).map((item: any, index: number) => (
                 <div class="aspect-square overflow-hidden">
-                  <img 
-                    src={photo} 
-                    alt={`Fotografie ${index + 2}`}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
+                  {item.type === 'video' ? (
+                    <video 
+                      src={item.url} 
+                      controls
+                      muted
+                      playsinline
+                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    ></video>
+                  ) : (
+                    <img 
+                      src={item.url} 
+                      alt={`Fotografie ${index + 2}`}
+                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -124,10 +168,10 @@ const photos = about?.photos?.map((p: any) => getImageUrl(p.asset._ref)).filter(
   </section>
 
   <!-- CTA -->
-  <section class="py-20 bg-sand-900 text-white">
+  <section class="py-20 bg-accent-800 text-white">
     <div class="container-narrow text-center">
-      <h2 class="font-heading text-4xl mb-6">Pojďme spolupracovat</h2>
-      <p class="text-sand-400 max-w-2xl mx-auto mb-8">
+      <h2 class="font-heading text-4xl mb-6 text-white">Pojďme spolupracovat</h2>
+      <p class="text-white/80 max-w-2xl mx-auto mb-8">
         Máte zájem o mé služby nebo se chcete na něco zeptat? 
         Neváhejte mě kontaktovat, rád vám pomohu.
       </p>

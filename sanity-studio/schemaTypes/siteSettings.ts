@@ -88,6 +88,31 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      description: 'Pokud chcete použít video místo obrázku, použijte pole níže',
+    }),
+    defineField({
+      name: 'heroVideo',
+      title: 'Úvodní video (hero)',
+      type: 'object',
+      group: 'hero',
+      fields: [
+        {
+          name: 'url',
+          title: 'URL videa',
+          type: 'url',
+          description: 'URL videa z YouTube, Vimeo nebo jiného zdroje',
+        },
+        {
+          name: 'file',
+          title: 'Video soubor',
+          type: 'file',
+          description: 'Nebo nahrajte video soubor (.mp4, .webm, .mov)',
+          options: {
+            accept: 'video/*',
+          },
+        },
+      ],
+      description: 'Video má přednost před obrázkem, pokud je nastavené',
     }),
     defineField({
       name: 'heroTagline',

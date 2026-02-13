@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import PortableText from '../../components/PortableText.astro';
 import { client, queries, urlFor } from '../../lib/sanity';
 import type { SanityService, SanitySiteSettings } from '../../lib/sanity';
 
@@ -11,7 +12,6 @@ export async function getStaticPaths() {
       .filter((service) => service.slug?.current)
       .map((service) => ({
         params: { slug: service.slug!.current },
-        props: { service },
       }));
   } catch (error) {
     console.error('Error fetching services for static paths:', error);
@@ -19,7 +19,29 @@ export async function getStaticPaths() {
   }
 }
 
-const { service } = Astro.props;
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/sluzby', 302);
+}
+
+// Fetch service by slug
+let service: SanityService | null = null;
+try {
+  service = await client.fetch<SanityService>(queries.serviceBySlug, { slug });
+  if (!service) {
+    console.warn(`Service with slug "${slug}" not found`);
+  }
+} catch (error) {
+  console.error('Error fetching service:', error);
+}
+
+// If service not found, redirect to services page
+if (!service || !service.slug?.current) {
+  console.warn(`Redirecting to /sluzby - service not found for slug: ${slug}`);
+  return Astro.redirect('/sluzby', 302);
+}
+
 let siteSettings: SanitySiteSettings | null = null;
 try {
   siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
@@ -64,8 +86,8 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
         <!-- Left Column - Content -->
         <div class="lg:col-span-2">
           {service.detailedDescription && (
-            <div class="prose prose-lg max-w-none text-sand-700 whitespace-pre-line mb-12">
-              {service.detailedDescription}
+            <div class="mb-12">
+              <PortableText content={service.detailedDescription} />
             </div>
           )}
 
