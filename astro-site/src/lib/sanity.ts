@@ -202,7 +202,22 @@ export const queries = {
   
   // Services
   allServices: `*[_type == "service"] | order(order asc)`,
-  serviceBySlug: `*[_type == "service" && slug.current == $slug][0]`,
+  serviceBySlug: `*[_type == "service" && slug.current == $slug][0]{
+    _id,
+    title,
+    slug,
+    description,
+    detailedDescription,
+    icon,
+    features,
+    order,
+    gallery[]{
+      type,
+      image,
+      videoUrl,
+      videoFile
+    }
+  }`,
   
   // Testimonials
   allTestimonials: `*[_type == "testimonial"] | order(order asc)`,

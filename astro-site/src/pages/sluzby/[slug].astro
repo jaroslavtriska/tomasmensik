@@ -31,6 +31,9 @@ try {
   service = await client.fetch<SanityService>(queries.serviceBySlug, { slug });
   if (!service) {
     console.warn(`Service with slug "${slug}" not found`);
+  } else {
+    // Debug: log detailedDescription to see if it's loaded
+    console.log('Service detailedDescription:', service.detailedDescription);
   }
 } catch (error) {
   console.error('Error fetching service:', error);
@@ -85,11 +88,15 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <!-- Left Column - Content -->
         <div class="lg:col-span-2">
-          {service.detailedDescription && (
+          {service.detailedDescription && Array.isArray(service.detailedDescription) && service.detailedDescription.length > 0 ? (
             <div class="mb-12">
               <PortableText content={service.detailedDescription} />
             </div>
-          )}
+          ) : service.detailedDescription ? (
+            <div class="mb-12 prose prose-lg max-w-none text-sand-700">
+              <p>{service.detailedDescription}</p>
+            </div>
+          ) : null}
 
           {service.features && service.features.length > 0 && (
             <div class="mb-12">
