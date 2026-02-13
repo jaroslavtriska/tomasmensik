@@ -182,7 +182,7 @@ if (videos && videos.length > 0) {
       const url = thumb.getAttribute('data-url');
       if (!url) return;
       
-      updateMainMedia(type, url);
+      setMainMedia(type, url);
       
       // Update thumbnail borders
       thumbnails.forEach(t => t.classList.remove('border-accent-700'));
@@ -195,7 +195,7 @@ if (videos && videos.length > 0) {
     });
   });
 
-  function updateMainMedia(type: string | null, url: string) {
+  function setMainMedia(type: string | null, url: string) {
     if (!mainContainer) return;
     
     if (type === 'image') {
@@ -321,7 +321,7 @@ if (videos && videos.length > 0) {
   function updateMainMedia() {
     if (!galleryItems[currentIndex]) return;
     const item = galleryItems[currentIndex];
-    updateMainMedia(item.type, item.url);
+    setMainMedia(item.type, item.url);
     
     thumbnails.forEach((t, i) => {
       t.classList.toggle('border-accent-700', i === currentIndex);
