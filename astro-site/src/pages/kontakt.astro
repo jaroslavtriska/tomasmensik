@@ -1,6 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
+// Web3Forms configuration (free, unlimited submissions)
+// Get your access key from https://web3forms.com (no registration needed, just enter your email)
+const WEB3FORMS_ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY;
+const formAction = WEB3FORMS_ACCESS_KEY ? 'https://api.web3forms.com/submit' : '#';
+
 // Contact info
 const contactInfo = {
   phone: '+420 123 456 789',
@@ -143,14 +148,15 @@ const inquiryTypes = [
         <!-- Contact Form -->
         <div class="lg:col-span-2">
           <div class="bg-white border border-sand-200 p-8 md:p-10">
-            <h2 class="font-heading text-2xl text-sand-900 mb-2">Kontaktní formulář</h2>
-            <p class="text-sand-600 mb-8">
-              Vyplňte formulář a já se vám ozvu co nejdříve.
-            </p>
+            <div id="form-content">
+              <h2 class="font-heading text-2xl text-sand-900 mb-2">Kontaktní formulář</h2>
+              <p class="text-sand-600 mb-8">
+                Vyplňte formulář a já se vám ozvu co nejdříve.
+              </p>
 
-            <form 
+              <form 
               id="contact-form"
-              action="https://formspree.io/f/your-form-id" 
+              action={formAction}
               method="POST"
               class="space-y-6"
             >
@@ -260,14 +266,27 @@ const inquiryTypes = [
                 </label>
               </div>
 
+              <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY || ''} />
+              <input type="hidden" name="subject" value="Nová zpráva z kontaktního formuláře" />
+              <input type="hidden" name="form_name" value="Kontakt" />
+              <input type="hidden" name="from_name" value="Tomáš Menšík - Web" />
+
               <!-- Submit -->
               <button 
                 type="submit"
                 class="btn btn-primary w-full md:w-auto"
+                disabled={!WEB3FORMS_ACCESS_KEY}
               >
                 Odeslat zprávu
               </button>
+
+              {!WEB3FORMS_ACCESS_KEY && (
+                <p class="text-xs text-red-500 mt-2">
+                  Formulář není plně nastaven – chybí <code>PUBLIC_WEB3FORMS_ACCESS_KEY</code> v&nbsp;.env.
+                </p>
+              )}
             </form>
+            </div>
 
             <!-- Success message (hidden by default) -->
             <div id="form-success" class="hidden text-center py-12">
@@ -290,7 +309,77 @@ const inquiryTypes = [
 
 <script>
   const form = document.getElementById('contact-form') as HTMLFormElement;
+  const formContent = document.getElementById('form-content');
   const successMessage = document.getElementById('form-success');
+
+  // Nastavení českých validačních zpráv pro všechny required pole
+  if (form) {
+    const inquiryType = form.querySelector('#inquiry-type') as HTMLSelectElement;
+    const firstName = form.querySelector('#first-name') as HTMLInputElement;
+    const lastName = form.querySelector('#last-name') as HTMLInputElement;
+    const email = form.querySelector('#email') as HTMLInputElement;
+    const message = form.querySelector('#message') as HTMLTextAreaElement;
+    const consent = form.querySelector('#consent') as HTMLInputElement;
+
+    // Nastavení custom validačních zpráv
+    if (inquiryType) {
+      inquiryType.addEventListener('invalid', () => {
+        inquiryType.setCustomValidity('Prosím vyberte, čeho se váš dotaz týká.');
+      });
+      inquiryType.addEventListener('change', () => {
+        inquiryType.setCustomValidity('');
+      });
+    }
+
+    if (firstName) {
+      firstName.addEventListener('invalid', () => {
+        firstName.setCustomValidity('Prosím vyplňte jméno.');
+      });
+      firstName.addEventListener('input', () => {
+        firstName.setCustomValidity('');
+      });
+    }
+
+    if (lastName) {
+      lastName.addEventListener('invalid', () => {
+        lastName.setCustomValidity('Prosím vyplňte příjmení.');
+      });
+      lastName.addEventListener('input', () => {
+        lastName.setCustomValidity('');
+      });
+    }
+
+    if (email) {
+      email.addEventListener('invalid', () => {
+        if (email.validity.valueMissing) {
+          email.setCustomValidity('Prosím vyplňte emailovou adresu.');
+        } else if (email.validity.typeMismatch) {
+          email.setCustomValidity('Prosím zadejte platnou emailovou adresu.');
+        }
+      });
+      email.addEventListener('input', () => {
+        email.setCustomValidity('');
+      });
+    }
+
+    if (message) {
+      message.addEventListener('invalid', () => {
+        message.setCustomValidity('Prosím vyplňte zprávu.');
+      });
+      message.addEventListener('input', () => {
+        message.setCustomValidity('');
+      });
+    }
+
+    if (consent) {
+      consent.addEventListener('invalid', () => {
+        consent.setCustomValidity('Prosím souhlaste se zpracováním osobních údajů.');
+      });
+      consent.addEventListener('change', () => {
+        consent.setCustomValidity('');
+      });
+    }
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -306,14 +395,21 @@ const inquiryTypes = [
         }
       });
 
-      if (response.ok) {
-        form.style.display = 'none';
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Skryj celý obsah formuláře včetně nadpisu a popisného textu
+        formContent?.style.setProperty('display', 'none');
+        // Zobraz success message
         successMessage?.classList.remove('hidden');
       } else {
-        alert('Omlouváme se, něco se pokazilo. Zkuste to prosím znovu.');
+        // Zobraz konkrétní chybovou zprávu z API, pokud je k dispozici
+        const errorMessage = result.message || 'Nepodařilo se odeslat formulář. Zkuste to prosím znovu.';
+        alert(`Chyba: ${errorMessage}`);
       }
     } catch (error) {
-      alert('Omlouváme se, něco se pokazilo. Zkuste to prosím znovu.');
+      console.error('Chyba při odesílání kontaktního formuláře:', error);
+      alert('Došlo k chybě při odesílání formuláře. Zkontrolujte prosím připojení k internetu a zkuste to znovu.');
     }
   });
 </script>
