@@ -4,41 +4,20 @@ import { client, queries } from '../lib/sanity';
 import type { SanityService } from '../lib/sanity';
 
 // Fetch services from Sanity with error handling
+// Services are already ordered by 'order' field in the query (queries.allServices)
 let services: SanityService[] = [];
 try {
   services = await client.fetch<SanityService[]>(queries.allServices) || [];
+  // Ensure proper sorting by order field (fallback for items without order)
+  services.sort((a, b) => {
+    const orderA = a.order ?? 999;
+    const orderB = b.order ?? 999;
+    return orderA - orderB;
+  });
 } catch (error) {
   console.error('Error fetching services:', error);
   services = [];
 }
-
-// Define service order according to client requirements
-const serviceOrder = [
-  'PRODEJ NEMOVITOSTI',
-  'HLEDÁNÍ NEMOVITOSTI',
-  'VÝKUP NEMOVITOSTI',
-  'ODHAD NEMOVITOSTI',
-  'PRONÁJEM NEMOVITOSTI',
-  'FINANCOVÁNÍ',
-  'PRÁVNÍ SERVIS',
-];
-
-// Sort services according to client's preferred order
-services.sort((a, b) => {
-  const indexA = serviceOrder.findIndex(order => a.title.toUpperCase().includes(order));
-  const indexB = serviceOrder.findIndex(order => b.title.toUpperCase().includes(order));
-  
-  // If both found in order list, sort by index
-  if (indexA !== -1 && indexB !== -1) {
-    return indexA - indexB;
-  }
-  // If only A found, put it first
-  if (indexA !== -1) return -1;
-  // If only B found, put it first
-  if (indexB !== -1) return 1;
-  // If neither found, sort by order field or keep original order
-  return (a.order || 999) - (b.order || 999);
-});
 
 const getIcon = (icon: string) => {
   const icons: Record<string, string> = {
