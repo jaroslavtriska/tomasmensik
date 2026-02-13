@@ -1,17 +1,32 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { client, queries } from '../lib/sanity';
+import type { SanitySiteSettings } from '../lib/sanity';
 
 // Web3Forms configuration (free, unlimited submissions)
 // Get your access key from https://web3forms.com (no registration needed, just enter your email)
 const WEB3FORMS_ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY;
 const formAction = WEB3FORMS_ACCESS_KEY ? 'https://api.web3forms.com/submit' : '#';
 
-// Contact info
+// Fetch site settings from Sanity
+let siteSettings: SanitySiteSettings | null = null;
+try {
+  siteSettings = await client.fetch<SanitySiteSettings>(queries.siteSettings);
+} catch (error) {
+  console.error('Error fetching site settings:', error);
+}
+
+// Contact info from Sanity with fallbacks
 const contactInfo = {
-  phone: '+420 123 456 789',
-  email: 'tomas@mensik-reality.cz',
-  instagram: 'https://instagram.com/tomasmensik',
-  address: 'Masarykovo náměstí 10, 586 01 Jihlava',
+  phone: siteSettings?.phone || '+420 123 456 789',
+  email: siteSettings?.email || 'tomas@mensik-reality.cz',
+  instagram: siteSettings?.instagram || 'https://instagram.com/tomasmensik',
+  address: siteSettings?.address || 'Jihlava, Česká republika',
+  openingHours: siteSettings?.openingHours || [
+    { days: 'Pondělí – Pátek', hours: '9:00 – 18:00' },
+    { days: 'Sobota', hours: 'Po domluvě' },
+    { days: 'Neděle', hours: 'Zavřeno' },
+  ],
 };
 
 // Inquiry types
@@ -126,23 +141,19 @@ const inquiryTypes = [
           </div>
 
           <!-- Office hours -->
-          <div class="mt-12 p-6 bg-sand-100">
-            <h3 class="font-heading text-lg text-sand-900 mb-4">Pracovní doba</h3>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between">
-                <dt class="text-sand-600">Pondělí – Pátek</dt>
-                <dd class="text-sand-900 font-medium">9:00 – 18:00</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-sand-600">Sobota</dt>
-                <dd class="text-sand-900 font-medium">Po domluvě</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-sand-600">Neděle</dt>
-                <dd class="text-sand-500">Zavřeno</dd>
-              </div>
-            </dl>
-          </div>
+          {contactInfo.openingHours && contactInfo.openingHours.length > 0 && (
+            <div class="mt-12 p-6 bg-sand-100">
+              <h3 class="font-heading text-lg text-sand-900 mb-4">Pracovní doba</h3>
+              <dl class="space-y-2 text-sm">
+                {contactInfo.openingHours.map((item) => (
+                  <div class="flex justify-between">
+                    <dt class="text-sand-600">{item.days}</dt>
+                    <dd class="text-sand-900 font-medium">{item.hours}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
         </div>
 
         <!-- Contact Form -->

@@ -52,6 +52,7 @@ export default defineType({
       title: 'Barevné téma',
       type: 'string',
       group: 'general',
+      readOnly: true,
       options: {
         list: [
           { title: 'Zelené (výchozí)', value: 'green' },
@@ -68,6 +69,7 @@ export default defineType({
       title: 'Styl písma',
       type: 'string',
       group: 'general',
+      readOnly: true,
       options: {
         list: [
           { title: 'Klasické (Cormorant + Outfit)', value: 'classic' },
