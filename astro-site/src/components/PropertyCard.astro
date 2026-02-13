@@ -13,7 +13,7 @@ interface Props {
 const { title, slug, location, price, type, image, area, sold = false } = Astro.props;
 ---
 
-<a href={`/nemovitosti/${slug}`} class="group block bg-white overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+<a href={`/nemovitosti/${slug}`} class="group block bg-white overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
   <!-- Image -->
   <div class="relative aspect-[4/3] overflow-hidden">
     <img 
@@ -60,7 +60,7 @@ const { title, slug, location, price, type, image, area, sold = false } = Astro.
         </span>
       )}
       {sold && <div></div>}
-      <span class="text-sand-400 group-hover:text-accent-700 group-hover:translate-x-1 transition-all">
+      <span class="text-sand-400 group-hover:text-accent-700 group-hover:translate-x-0.5 transition-all duration-300">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
