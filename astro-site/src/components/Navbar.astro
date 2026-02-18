@@ -22,7 +22,7 @@ const filteredNavLinks = siteSettings?.navLinks?.length
   ? siteSettings.navLinks.filter((l) => l.href && l.label).map((l) => ({ href: l.href!, label: l.label! }))
   : [];
 const navLinks = filteredNavLinks.length > 0 ? filteredNavLinks : defaultNavLinks;
-const logoUrl = siteSettings?.logoImage ? urlFor(siteSettings.logoImage).width(180).height(48).fit('max').auto('format').url() : null;
+const logoUrl = siteSettings?.logoImage ? urlFor(siteSettings.logoImage).width(180).fit('max').auto('format').url() : null;
 const logoAlt = siteSettings?.logoAlt || `${siteName} - logo`;
 const currentPath = Astro.url.pathname;
 ---

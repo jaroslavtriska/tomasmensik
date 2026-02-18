@@ -22,6 +22,18 @@ interface Props {
       _ref: string;
       _type: string;
     };
+    crop?: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    };
+    hotspot?: {
+      x: number;
+      y: number;
+      height: number;
+      width: number;
+    };
     alt?: string;
   }>;
 }
@@ -48,11 +60,11 @@ if (validBlocks.length === 0) {
   return null;
 }
 
-// Helper to get image URL
-const getImageUrl = (ref: string) => {
-  if (!ref) return null;
-  const imageRef: SanityImageSource = { _ref: ref, _type: 'reference' };
-  return urlFor(imageRef).width(1200).height(800).auto('format').url();
+// Helper to get image URL - pass full image object to preserve crop/hotspot
+const getImageUrl = (imageBlock: any) => {
+  if (!imageBlock?.asset?._ref) return null;
+  // Pass the full image object to urlFor - it will automatically apply crop/hotspot
+  return urlFor(imageBlock).width(1200).fit('max').auto('format').url();
 };
 
 // Helper to render marks (bold, italic, links)
@@ -103,7 +115,7 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
 <div class="prose prose-lg max-w-none text-sand-700">
   {validBlocks.map((block) => {
     if (block._type === 'image' && block.asset) {
-      const imageUrl = getImageUrl(block.asset._ref);
+      const imageUrl = getImageUrl(block);
       if (!imageUrl) return null;
       
       return (

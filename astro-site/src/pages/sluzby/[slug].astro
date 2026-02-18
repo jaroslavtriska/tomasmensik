@@ -123,7 +123,7 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
                   <div class="aspect-video overflow-hidden bg-sand-100">
                     {item.type === 'image' && item.image && (
                       <img 
-                        src={urlFor(item.image).width(800).height(600).auto('format').url()} 
+                        src={urlFor(item.image).width(800).fit('max').auto('format').url()} 
                         alt={`${service.title} - obrázek ${index + 1}`}
                         class="w-full h-full object-cover"
                       />
