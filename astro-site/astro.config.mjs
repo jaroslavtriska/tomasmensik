@@ -1,13 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://mensik-reality.cz', // Replace with actual domain
   output: 'static', // většina stránek statická, Zrealizováno se renderuje na požádání (prerender = false)
-  adapter: vercel(),
+  // Adapter není potřeba - Vercel automaticky detekuje Astro a správně nakonfiguruje nastavení
   vite: {
     plugins: [tailwindcss()],
     server: {
