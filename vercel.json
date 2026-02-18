@@ -2,7 +2,18 @@
   "installCommand": "cd sanity-studio && npm ci && cd ../astro-site && npm ci",
   "buildCommand": "cd sanity-studio && npm run build && mkdir -p ../astro-site/public/admin && cp -r dist/* ../astro-site/public/admin/ && cd ../astro-site && npm run build",
   "outputDirectory": "astro-site/dist",
+  "functions": {
+    "astro-site/dist/server/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
-    { "source": "/static/:path*", "destination": "/admin/static/:path*" }
-  ]
+    { 
+      "source": "/static/(.*)", 
+      "destination": "/admin/static/$1" 
+    }
+  ],
+  "github": {
+    "enabled": true
+  }
 }
