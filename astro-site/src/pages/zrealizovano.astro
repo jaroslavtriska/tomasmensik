@@ -1,16 +1,24 @@
 ---
+// Stránka se vykresluje při každém požadavku, aby vždy zobrazovala aktuální data z Sanity (včetně čísla „Prodaných nemovitostí“ z O mně).
+export const prerender = false;
+
 import Layout from '../layouts/Layout.astro';
 import PropertyCard from '../components/PropertyCard.astro';
 import { client, queries, formatPrice } from '../lib/sanity';
-import type { SanityProperty } from '../lib/sanity';
+import type { SanityProperty, SanityAbout } from '../lib/sanity';
 
-// Fetch sold properties from Sanity with error handling
+// Fetch sold properties and about (for stats) from Sanity
 let sanityProperties: SanityProperty[] = [];
+let about: SanityAbout | null = null;
 try {
-  sanityProperties = await client.fetch<SanityProperty[]>(queries.soldProperties) || [];
+  [sanityProperties, about] = await Promise.all([
+    client.fetch<SanityProperty[]>(queries.soldProperties) || [],
+    client.fetch<SanityAbout | null>(queries.about),
+  ]);
 } catch (error) {
-  console.error('Error fetching sold properties:', error);
+  console.error('Error fetching data:', error);
   sanityProperties = [];
+  about = null;
 }
 
 // Transform for PropertyCard
@@ -25,9 +33,9 @@ const soldProperties = sanityProperties.map(p => ({
   sold: true,
 }));
 
-// Stats
-const totalValue = '23+ mil. Kč';
-const totalCount = soldProperties.length + 94;
+// Stats: Fixed values for frontend display
+const totalCount = '50+';
+const totalValue = '200+ mil. Kč';
 ---
 
 <Layout title="Zrealizováno" description="Přehled úspěšně prodaných nemovitostí. Více než 100 spokojených klientů.">
@@ -55,7 +63,7 @@ const totalCount = soldProperties.length + 94;
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div class="text-center">
           <div class="font-heading text-4xl text-accent-700 font-semibold mb-1">
-            {totalCount}+
+            {totalCount}
           </div>
           <div class="text-sand-600 text-sm">Prodaných nemovitostí</div>
         </div>
