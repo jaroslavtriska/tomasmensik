@@ -7,9 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://mensik-reality.cz', // Replace with actual domain
   output: 'hybrid', // většina stránek statická, Zrealizováno se renderuje na požádání (aktuální data z Sanity)
-  adapter: vercel({
-    functionPerRoute: false,
-  }),
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
     server: {
