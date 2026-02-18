@@ -1,24 +1,16 @@
 ---
-// Stránka se vykresluje při každém požadavku, aby vždy zobrazovala aktuální data z Sanity (včetně čísla „Prodaných nemovitostí“ z O mně).
-export const prerender = false;
-
 import Layout from '../layouts/Layout.astro';
 import PropertyCard from '../components/PropertyCard.astro';
 import { client, queries, formatPrice } from '../lib/sanity';
-import type { SanityProperty, SanityAbout } from '../lib/sanity';
+import type { SanityProperty } from '../lib/sanity';
 
-// Fetch sold properties and about (for stats) from Sanity
+// Fetch sold properties from Sanity with error handling
 let sanityProperties: SanityProperty[] = [];
-let about: SanityAbout | null = null;
 try {
-  [sanityProperties, about] = await Promise.all([
-    client.fetch<SanityProperty[]>(queries.soldProperties) || [],
-    client.fetch<SanityAbout | null>(queries.about),
-  ]);
+  sanityProperties = await client.fetch<SanityProperty[]>(queries.soldProperties) || [];
 } catch (error) {
-  console.error('Error fetching data:', error);
+  console.error('Error fetching sold properties:', error);
   sanityProperties = [];
-  about = null;
 }
 
 // Transform for PropertyCard

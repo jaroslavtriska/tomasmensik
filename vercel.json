@@ -3,12 +3,6 @@
   "buildCommand": "cd sanity-studio && npm run build && mkdir -p ../astro-site/public/admin && cp -r dist/* ../astro-site/public/admin/ && cd ../astro-site && npm run build",
   "outputDirectory": "astro-site/dist",
   "rewrites": [
-    { 
-      "source": "/static/(.*)", 
-      "destination": "/admin/static/$1" 
-    }
-  ],
-  "github": {
-    "enabled": true
-  }
+    { "source": "/static/:path*", "destination": "/admin/static/:path*" }
+  ]
 }
