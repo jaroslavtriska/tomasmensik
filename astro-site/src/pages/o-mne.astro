@@ -20,14 +20,16 @@ const getImageUrl = (ref: string) => {
   return `https://cdn.sanity.io/images/${projectId}/${dataset}/${ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
 };
 
-// Helper to get video URL from Sanity file asset
+// Helper to get video URL from Sanity file asset – podpora .mp4, .mov, .webm
 const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
   if (!fileAsset?.asset?._ref) return null;
   const ref = fileAsset.asset._ref;
-  const fileId = ref.replace('file-', '').replace(/-mp4$/, '').replace(/-webm$/, '').replace(/-mov$/, '');
+  const extMatch = ref.match(/-(\w+)$/);
+  const ext = extMatch && ['mp4', 'mov', 'webm'].includes(extMatch[1]) ? extMatch[1] : 'mp4';
+  const fileId = ref.replace(/^file-/, '').replace(/-\w+$/, '');
   const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0';
   const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
-  return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.mp4`;
+  return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.${ext}`;
 };
 
 // Default values if no content in Sanity

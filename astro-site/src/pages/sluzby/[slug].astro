@@ -55,6 +55,22 @@ try {
 
 const phone = siteSettings?.phone || '+420 123 456 789';
 const email = siteSettings?.email || 'tomas@mensik-reality.cz';
+
+// URL nahraného videa z Sanity (file asset) – podpora .mp4, .mov, .webm
+const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
+  if (!fileAsset?.asset?._ref) return null;
+  const ref = fileAsset.asset._ref;
+  const extMatch = ref.match(/-(\w+)$/);
+  const ext = extMatch && ['mp4', 'mov', 'webm'].includes(extMatch[1]) ? extMatch[1] : 'mp4';
+  const fileId = ref.replace(/^file-/, '').replace(/-\w+$/, '');
+  const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0';
+  const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
+  return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.${ext}`;
+};
+
+// Pro položky galerie: použít videoUrl (YouTube/Vimeo) nebo URL z nahraného souboru
+const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: { _ref: string } } }) =>
+  item.videoUrl || (item.videoFile ? getVideoUrl(item.videoFile) : null);
 ---
 
 <Layout title={service.title} description={service.description}>
@@ -128,37 +144,41 @@ const email = siteSettings?.email || 'tomas@mensik-reality.cz';
                         class="w-full h-full object-cover"
                       />
                     )}
-                    {item.type === 'video' && item.videoUrl && (
-                      <div class="w-full h-full">
-                        {item.videoUrl.includes('youtube.com') || item.videoUrl.includes('youtu.be') ? (
-                          <iframe
-                            src={item.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
-                            class="w-full h-full"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            muted
-                          ></iframe>
-                        ) : item.videoUrl.includes('vimeo.com') ? (
-                          <iframe
-                            src={item.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
-                            class="w-full h-full"
-                            frameborder="0"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            muted
-                          ></iframe>
-                        ) : (
-                          <video
-                            src={item.videoUrl}
-                            class="w-full h-full object-cover"
-                            controls
-                            muted
-                            playsinline
-                          ></video>
-                        )}
-                      </div>
-                    )}
+                    {item.type === 'video' && (() => {
+                      const videoUrl = getGalleryItemVideoUrl(item);
+                      if (!videoUrl) return null;
+                      return (
+                        <div class="w-full h-full">
+                          {videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') ? (
+                            <iframe
+                              src={videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                              class="w-full h-full"
+                              frameborder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowfullscreen
+                              muted
+                            ></iframe>
+                          ) : videoUrl.includes('vimeo.com') ? (
+                            <iframe
+                              src={videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                              class="w-full h-full"
+                              frameborder="0"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowfullscreen
+                              muted
+                            ></iframe>
+                          ) : (
+                            <video
+                              src={videoUrl}
+                              class="w-full h-full object-cover"
+                              controls
+                              muted
+                              playsinline
+                            ></video>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 ))}
               </div>

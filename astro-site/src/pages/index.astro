@@ -39,12 +39,14 @@ const services = sanityServices.slice(0, 3).map(s => ({
 const phone = siteSettings?.phone || '+420 123 456 789';
 const email = siteSettings?.email || 'tomas@mensik-reality.cz';
 
-// Helper to get video URL from Sanity file asset
+// Helper to get video URL from Sanity file asset – podpora .mp4, .mov, .webm
 const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
   if (!fileAsset?.asset?._ref) return null;
   const ref = fileAsset.asset._ref;
-  const fileId = ref.replace('file-', '').replace(/-mp4$/, '').replace(/-webm$/, '').replace(/-mov$/, '');
-  return `https://cdn.sanity.io/files/${import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0'}/${import.meta.env.PUBLIC_SANITY_DATASET || 'production'}/${fileId}.mp4`;
+  const extMatch = ref.match(/-(\w+)$/);
+  const ext = extMatch && ['mp4', 'mov', 'webm'].includes(extMatch[1]) ? extMatch[1] : 'mp4';
+  const fileId = ref.replace(/^file-/, '').replace(/-\w+$/, '');
+  return `https://cdn.sanity.io/files/${import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0'}/${import.meta.env.PUBLIC_SANITY_DATASET || 'production'}/${fileId}.${ext}`;
 };
 
 const heroImageUrl = siteSettings?.heroImage ? urlFor(siteSettings.heroImage).width(1920).height(1080).auto('format').url() : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop';
