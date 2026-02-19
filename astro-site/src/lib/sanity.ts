@@ -99,6 +99,7 @@ export interface SanityService {
     videoUrl?: string;
     videoFile?: { asset: { _ref: string } };
     poster?: SanityImageSource;
+    aspectRatio?: '16/9' | '9/16' | '4/3' | '1/1';
   }>;
   icon: 'home' | 'key' | 'chart' | 'chat' | 'search' | 'document';
   features?: string[];
@@ -108,6 +109,7 @@ export interface SanityService {
     image?: SanityImageSource;
     videoUrl?: string;
     videoFile?: { asset: { _ref: string } };
+    aspectRatio?: '16/9' | '9/16' | '4/3' | '1/1';
   }>;
 }
 
@@ -230,7 +232,8 @@ export const queries = {
       type,
       image,
       videoUrl,
-      videoFile
+      videoFile,
+      aspectRatio
     }
   }`,
   

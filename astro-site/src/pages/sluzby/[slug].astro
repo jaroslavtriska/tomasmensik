@@ -67,6 +67,13 @@ const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
 
 const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: { _ref: string } } }) =>
   item.videoUrl || (item.videoFile ? getVideoUrl(item.videoFile) : null);
+
+const aspectRatioClass: Record<string, string> = {
+  '16/9': 'aspect-video',
+  '9/16': 'aspect-[9/16]',
+  '4/3': 'aspect-[4/3]',
+  '1/1': 'aspect-square',
+};
 ---
 
 <Layout title={service.title} description={service.description}>
@@ -131,8 +138,11 @@ const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: 
             <div class="mt-12">
               <h2 class="font-heading text-2xl text-sand-900 mb-6">Galerie</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {service.gallery.map((item: any, index: number) => (
-                  <div class="aspect-video overflow-hidden bg-sand-100 rounded-lg">
+                {service.gallery.map((item: any, index: number) => {
+                  const isVideo = item.type === 'video';
+                  const aspectClass = isVideo ? (aspectRatioClass[item.aspectRatio || '16/9'] || 'aspect-video') : 'aspect-video';
+                  return (
+                  <div class={`${aspectClass} overflow-hidden bg-sand-100 rounded-lg flex items-center justify-center`}>
                     {item.type === 'image' && item.image && (
                       <img 
                         src={urlFor(item.image).width(800).fit('max').auto('format').url()} 
@@ -144,7 +154,7 @@ const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: 
                       const videoUrl = getGalleryItemVideoUrl(item);
                       if (!videoUrl) return null;
                       return (
-                        <div class="w-full h-full">
+                        <div class="w-full h-full flex items-center justify-center">
                           {videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') ? (
                             <iframe
                               src={videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
@@ -166,7 +176,7 @@ const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: 
                           ) : (
                             <video
                               src={videoUrl}
-                              class="w-full h-full object-cover"
+                              class="w-full h-full object-contain"
                               controls
                               muted
                               playsinline
@@ -176,7 +186,7 @@ const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: 
                       );
                     })()}
                   </div>
-                ))}
+                );})}
               </div>
             </div>
           )}

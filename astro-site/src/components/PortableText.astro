@@ -27,6 +27,7 @@ interface Props {
     videoUrl?: string;
     videoFile?: { asset: { _ref: string } };
     poster?: { asset?: { _ref: string } };
+    aspectRatio?: '16/9' | '9/16' | '4/3' | '1/1';
   }>;
 }
 
@@ -71,6 +72,13 @@ const getVideoBlockData = (videoBlock: any) => {
   const embedUrl = getVideoEmbedUrl(videoUrl);
   const isEmbed = !!(embedUrl && (videoUrl.includes('youtube') || videoUrl.includes('vimeo')));
   return { videoUrl, posterUrl, embedUrl, isEmbed };
+};
+
+const aspectRatioClass: Record<string, string> = {
+  '16/9': 'aspect-video',
+  '9/16': 'aspect-[9/16]',
+  '4/3': 'aspect-[4/3]',
+  '1/1': 'aspect-square',
 };
 
 // Helper to render marks (bold, italic, links)
@@ -144,11 +152,12 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
       const videoData = getVideoBlockData(block);
       if (!videoData) return null;
       const { videoUrl, posterUrl, embedUrl, isEmbed } = videoData;
+      const aspectClass = aspectRatioClass[block.aspectRatio || '16/9'] || 'aspect-video';
       
       return (
         <figure class="my-8">
           <div 
-            class="inline-video aspect-video w-full max-w-2xl rounded-lg overflow-hidden bg-sand-200 cursor-pointer group relative"
+            class={`inline-video ${aspectClass} w-full max-w-2xl rounded-lg overflow-hidden bg-sand-200 cursor-pointer group relative`}
             data-video-url={videoUrl}
             data-embed-url={embedUrl || ''}
             data-is-embed={isEmbed}
@@ -158,7 +167,7 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
                 <img 
                   src={posterUrl} 
                   alt="Náhled videa"
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-contain"
                 />
               ) : (
                 <div class="w-full h-full flex items-center justify-center bg-sand-300" />
@@ -223,7 +232,7 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
       } else {
         const video = document.createElement('video');
         video.src = videoUrl;
-        video.className = 'absolute inset-0 w-full h-full object-cover';
+        video.className = 'absolute inset-0 w-full h-full object-contain';
         video.controls = true;
         video.autoplay = true;
         video.playsInline = true;

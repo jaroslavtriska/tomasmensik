@@ -102,6 +102,21 @@ export default defineType({
               description: 'Volitelné - pro YouTube/Vimeo se použije automatický náhled',
               options: {hotspot: true},
             },
+            {
+              name: 'aspectRatio',
+              title: 'Poměr stran',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Na šířku (16:9)', value: '16/9'},
+                  {title: 'Na výšku (9:16)', value: '9/16'},
+                  {title: '4:3', value: '4/3'},
+                  {title: 'Čtverec (1:1)', value: '1/1'},
+                ],
+                layout: 'radio',
+              },
+              initialValue: '16/9',
+            },
           ],
           preview: {
             select: {
@@ -187,6 +202,22 @@ export default defineType({
               title: 'Video soubor',
               type: 'file',
               description: 'Nebo nahrajte video soubor',
+              hidden: ({parent}) => parent?.type !== 'video',
+            },
+            {
+              name: 'aspectRatio',
+              title: 'Poměr stran videa',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Na šířku (16:9)', value: '16/9'},
+                  {title: 'Na výšku (9:16)', value: '9/16'},
+                  {title: '4:3', value: '4/3'},
+                  {title: 'Čtverec (1:1)', value: '1/1'},
+                ],
+                layout: 'radio',
+              },
+              initialValue: '16/9',
               hidden: ({parent}) => parent?.type !== 'video',
             },
           ],
