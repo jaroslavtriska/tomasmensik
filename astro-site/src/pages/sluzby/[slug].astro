@@ -31,9 +31,6 @@ try {
   service = await client.fetch<SanityService>(queries.serviceBySlug, { slug });
   if (!service) {
     console.warn(`Service with slug "${slug}" not found`);
-  } else {
-    // Debug: log detailedDescription to see if it's loaded
-    console.log('Service detailedDescription:', service.detailedDescription);
   }
 } catch (error) {
   console.error('Error fetching service:', error);
@@ -56,7 +53,7 @@ try {
 const phone = siteSettings?.phone || '+420 123 456 789';
 const email = siteSettings?.email || 'tomas@mensik-reality.cz';
 
-// URL nahraného videa z Sanity (file asset) – podpora .mp4, .mov, .webm
+// URL nahraného videa z Sanity (file asset)
 const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
   if (!fileAsset?.asset?._ref) return null;
   const ref = fileAsset.asset._ref;
@@ -68,7 +65,6 @@ const getVideoUrl = (fileAsset: { asset: { _ref: string } } | undefined) => {
   return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.${ext}`;
 };
 
-// Pro položky galerie: použít videoUrl (YouTube/Vimeo) nebo URL z nahraného souboru
 const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: { _ref: string } } }) =>
   item.videoUrl || (item.videoFile ? getVideoUrl(item.videoFile) : null);
 ---
@@ -136,7 +132,7 @@ const getGalleryItemVideoUrl = (item: { videoUrl?: string; videoFile?: { asset: 
               <h2 class="font-heading text-2xl text-sand-900 mb-6">Galerie</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {service.gallery.map((item: any, index: number) => (
-                  <div class="aspect-video overflow-hidden bg-sand-100">
+                  <div class="aspect-video overflow-hidden bg-sand-100 rounded-lg">
                     {item.type === 'image' && item.image && (
                       <img 
                         src={urlFor(item.image).width(800).fit('max').auto('format').url()} 

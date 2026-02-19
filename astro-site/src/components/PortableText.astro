@@ -1,6 +1,5 @@
 ---
-import { urlFor } from '../lib/sanity';
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import { urlFor, getVideoUrlFromFile, getVideoThumbnailUrl, getVideoEmbedUrl } from '../lib/sanity';
 
 interface Props {
   content: Array<{
@@ -22,19 +21,12 @@ interface Props {
       _ref: string;
       _type: string;
     };
-    crop?: {
-      top: number;
-      bottom: number;
-      left: number;
-      right: number;
-    };
-    hotspot?: {
-      x: number;
-      y: number;
-      height: number;
-      width: number;
-    };
+    crop?: { top: number; bottom: number; left: number; right: number };
+    hotspot?: { x: number; y: number; height: number; width: number };
     alt?: string;
+    videoUrl?: string;
+    videoFile?: { asset: { _ref: string } };
+    poster?: { asset?: { _ref: string } };
   }>;
 }
 
@@ -53,6 +45,9 @@ const validBlocks = content.filter((block) => {
   if (block._type === 'image' && block.asset) {
     return true;
   }
+  if (block._type === 'video' && (block.videoUrl || block.videoFile)) {
+    return true;
+  }
   return false;
 });
 
@@ -63,8 +58,19 @@ if (validBlocks.length === 0) {
 // Helper to get image URL - pass full image object to preserve crop/hotspot
 const getImageUrl = (imageBlock: any) => {
   if (!imageBlock?.asset?._ref) return null;
-  // Pass the full image object to urlFor - it will automatically apply crop/hotspot
   return urlFor(imageBlock).width(1200).fit('max').auto('format').url();
+};
+
+// Helper to get video URL and thumbnail for video block
+const getVideoBlockData = (videoBlock: any) => {
+  const videoUrl = videoBlock.videoUrl || (videoBlock.videoFile ? getVideoUrlFromFile(videoBlock.videoFile) : null);
+  if (!videoUrl) return null;
+  const posterUrl = videoBlock.poster?.asset
+    ? urlFor(videoBlock.poster).width(1200).fit('max').auto('format').url()
+    : getVideoThumbnailUrl(videoUrl);
+  const embedUrl = getVideoEmbedUrl(videoUrl);
+  const isEmbed = !!(embedUrl && (videoUrl.includes('youtube') || videoUrl.includes('vimeo')));
+  return { videoUrl, posterUrl, embedUrl, isEmbed };
 };
 
 // Helper to render marks (bold, italic, links)
@@ -133,6 +139,42 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
         </figure>
       );
     }
+
+    if (block._type === 'video') {
+      const videoData = getVideoBlockData(block);
+      if (!videoData) return null;
+      const { videoUrl, posterUrl, embedUrl, isEmbed } = videoData;
+      
+      return (
+        <figure class="my-8">
+          <div 
+            class="inline-video aspect-video w-full max-w-2xl rounded-lg overflow-hidden bg-sand-200 cursor-pointer group relative"
+            data-video-url={videoUrl}
+            data-embed-url={embedUrl || ''}
+            data-is-embed={isEmbed}
+          >
+            <div class="inline-video-poster absolute inset-0">
+              {posterUrl ? (
+                <img 
+                  src={posterUrl} 
+                  alt="Náhled videa"
+                  class="w-full h-full object-cover"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center bg-sand-300" />
+              )}
+              <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <svg class="w-8 h-8 text-accent-700 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </figure>
+      );
+    }
     
     if (block._type === 'block' && block.children) {
       const text = block.children.map((child: any) => {
@@ -159,3 +201,35 @@ const renderMarks = (text: string, marks: any[] = [], markDefs: any[] = []) => {
     return null;
   })}
 </div>
+
+<script>
+  document.querySelectorAll('.inline-video').forEach((el) => {
+    if ((el as HTMLElement).dataset.played === 'true') return;
+    el.addEventListener('click', function () {
+      const videoUrl = (el as HTMLElement).dataset.videoUrl;
+      const embedUrl = (el as HTMLElement).dataset.embedUrl;
+      const isEmbed = (el as HTMLElement).dataset.isEmbed === 'true';
+      const poster = el.querySelector('.inline-video-poster');
+      if (!poster || !videoUrl) return;
+      poster.remove();
+      if (isEmbed && embedUrl) {
+        const iframe = document.createElement('iframe');
+        iframe.src = embedUrl;
+        iframe.className = 'absolute inset-0 w-full h-full';
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        el.appendChild(iframe);
+      } else {
+        const video = document.createElement('video');
+        video.src = videoUrl;
+        video.className = 'absolute inset-0 w-full h-full object-cover';
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        el.appendChild(video);
+      }
+      (el as HTMLElement).dataset.played = 'true';
+    });
+  });
+</script>

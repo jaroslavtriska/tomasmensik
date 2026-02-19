@@ -96,6 +96,9 @@ export interface SanityService {
       width: number;
     };
     alt?: string;
+    videoUrl?: string;
+    videoFile?: { asset: { _ref: string } };
+    poster?: SanityImageSource;
   }>;
   icon: 'home' | 'key' | 'chart' | 'chat' | 'search' | 'document';
   features?: string[];
@@ -246,6 +249,44 @@ export const queries = {
   // Page Career (Kariéra)
   pageCareer: `*[_type == "pageCareer"][0]`,
 };
+
+// Get video URL from Sanity file asset
+export function getVideoUrlFromFile(fileAsset: { asset: { _ref: string } } | undefined): string | null {
+  if (!fileAsset?.asset?._ref) return null;
+  const ref = fileAsset.asset._ref;
+  const extMatch = ref.match(/-(\w+)$/);
+  const ext = extMatch && ['mp4', 'mov', 'webm'].includes(extMatch[1]) ? extMatch[1] : 'mp4';
+  const fileId = ref.replace(/^file-/, '').replace(/-\w+$/, '');
+  const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2mnybhg0';
+  const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
+  return `https://cdn.sanity.io/files/${projectId}/${dataset}/${fileId}.${ext}`;
+}
+
+// Get thumbnail URL for video (YouTube, Vimeo, or null for custom)
+export function getVideoThumbnailUrl(videoUrl: string): string | null {
+  if (!videoUrl) return null;
+  // YouTube: https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg
+  const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+  // Vimeo: https://vumbnail.com/VIDEO_ID.jpg
+  const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) return `https://vumbnail.com/${vimeoMatch[1]}.jpg`;
+  return null;
+}
+
+// Get embed URL for YouTube/Vimeo
+export function getVideoEmbedUrl(videoUrl: string): string | null {
+  if (!videoUrl) return null;
+  if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+    return videoUrl
+      .replace('watch?v=', 'embed/')
+      .replace('youtu.be/', 'youtube.com/embed/') + '?autoplay=1';
+  }
+  if (videoUrl.includes('vimeo.com')) {
+    return videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/') + '?autoplay=1';
+  }
+  return null;
+}
 
 // Helper function to format price in Czech format
 export function formatPrice(price: number): string {

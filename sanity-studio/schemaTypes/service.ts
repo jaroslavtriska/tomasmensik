@@ -78,8 +78,45 @@ export default defineType({
             },
           ],
         },
+        {
+          type: 'object',
+          name: 'video',
+          title: 'Video',
+          fields: [
+            {
+              name: 'videoUrl',
+              title: 'URL videa',
+              type: 'url',
+              description: 'URL videa z YouTube, Vimeo nebo jiného zdroje',
+            },
+            {
+              name: 'videoFile',
+              title: 'Video soubor',
+              type: 'file',
+              description: 'Nebo nahrajte video soubor',
+            },
+            {
+              name: 'poster',
+              title: 'Náhledový obrázek',
+              type: 'image',
+              description: 'Volitelné - pro YouTube/Vimeo se použije automatický náhled',
+              options: {hotspot: true},
+            },
+          ],
+          preview: {
+            select: {
+              videoUrl: 'videoUrl',
+            },
+            prepare({videoUrl}) {
+              return {
+                title: 'Video',
+                subtitle: videoUrl || 'Nahraný soubor',
+              };
+            },
+          },
+        },
       ],
-      description: 'Detailní popis pro stránku služby - můžete přidat text i obrázky',
+      description: 'Detailní popis pro stránku služby - můžete přidat text, obrázky i videa',
     }),
     defineField({
       name: 'icon',
