@@ -212,10 +212,10 @@ export interface SanityPageCareer {
 // GROQ Queries
 export const queries = {
   // Properties
-  allProperties: `*[_type == "property" && status == "forSale"] | order(order asc, _createdAt desc)`,
-  soldProperties: `*[_type == "property" && status == "sold"] | order(order asc, _createdAt desc)`,
-  featuredProperties: `*[_type == "property" && status == "forSale" && featured == true] | order(order asc)[0...6]`,
-  propertyBySlug: `*[_type == "property" && slug.current == $slug][0]`,
+  allProperties: `*[_type == "property" && status == "forSale" && slug.current != "test"] | order(order asc, _createdAt desc)`,
+  soldProperties: `*[_type == "property" && status == "sold" && slug.current != "test"] | order(order asc, _createdAt desc)`,
+  featuredProperties: `*[_type == "property" && status == "forSale" && featured == true && slug.current != "test"] | order(order asc)[0...6]`,
+  propertyBySlug: `*[_type == "property" && slug.current == $slug && slug.current != "test"][0]`,
   
   // Services
   allServices: `*[_type == "service"] | order(order asc)`,

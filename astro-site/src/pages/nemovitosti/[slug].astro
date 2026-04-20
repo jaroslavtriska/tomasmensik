@@ -6,7 +6,7 @@ import type { SanityProperty, SanitySiteSettings } from '../../lib/sanity';
 
 export async function getStaticPaths() {
   try {
-    const properties = await client.fetch<any[]>(`*[_type == "property"]{
+    const properties = await client.fetch<any[]>(`*[_type == "property" && slug.current != "test"]{
   ...,
   videos[]{
     url,
