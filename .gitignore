@@ -25,3 +25,29 @@ yarn-error.log*
 
 # Sanity
 .sanity/
+
+# --- ~/AI standard ignores (secrets, dependencies, caches, big media) ---
+.env
+.env.*
+!.env.example
+*.pem
+node_modules/
+.venv/
+venv/
+__pycache__/
+.next/
+.turbo/
+.cache/
+dist/
+build/
+.vercel/
+.DS_Store
+*.log
+media/
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+*.zip
+.claude/settings.local.json
